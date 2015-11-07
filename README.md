@@ -10,6 +10,11 @@ below is the webAnalyst architecture:
 ![webAnalyst architecture](design/arch.jpg)
 
 ### TODOs
+* 完成构建工具的选型(done)
+    * package manage:NPM
+    * build tool:Gulp
+    
+    
 * 完成数据收集框架的设计
     * 完成API风格的设计(ing)
         * _wa.push([trackerName,command,param1,param2,param3...])
@@ -36,12 +41,13 @@ below is the webAnalyst architecture:
     * 考虑提供一些接口，能够灵活对接第三方的跟踪器
         * 在一些跟踪动作发生的时候，多个第三方跟踪器都能收到跟踪
 
-* 开发数据收集服务端(demo)
+* 完成构建环境的搭建
+* 开发demo数据收集服务端
     * 利用cookie标识唯一用户
     * 解决数据上传脚本缓存和上传地址更新的矛盾问题
     
     
-* 开发数据分析端(demo)
+* 开发demo数据分析端
     * 简单实现一些分析项目：
         * PV,UV等
         * 页面性能分析:
@@ -54,9 +60,20 @@ below is the webAnalyst architecture:
         * 用户来源,ip,地域分析
         * 客户端网络状况分析
         * 浏览器新特性兼容性分析
+            * 需要搞定不同浏览器Ha的判断
+            * 前端脚本可以收集一部分关于浏览器特性的信息，辅助后端进行分析判断
         * ...
 
 
+### Usage
+
+* 目录结构：
+    * bin:构建输出
+    * demo:一些演示项目
+    * design:设计文档
+    * libs:第三方库
+    * src:源码
+    * test:测试代码
 
 ### License
 MIT

@@ -1,6 +1,6 @@
 .idea
 node_modules
-libs
+libs/cankao
 junit-report
 coverage
 *.iml
