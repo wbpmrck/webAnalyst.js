@@ -3,57 +3,57 @@ A powerful tool for collecting data from browser ,analyze page speed,track user 
 
 
 ### Versions Status
-* V 0.1.0:¿ª·¢ÖÐ(under development)
+* V 0.1.0:å¼€å‘ä¸­(under development)
 
 ### architecture
 below is the webAnalyst architecture:
 ![webAnalyst architecture](design/arch.jpg)
 
 ### TODOs
-* Íê³ÉÊý¾ÝÊÕ¼¯¿ò¼ÜµÄÉè¼Æ
-    * Íê³ÉAPI·ç¸ñµÄÉè¼Æ(ing)
+* å®Œæˆæ•°æ®æ”¶é›†æ¡†æž¶çš„è®¾è®¡
+    * å®ŒæˆAPIé£Žæ ¼çš„è®¾è®¡(ing)
         * _wa.push([trackerName,command,param1,param2,param3...])
-    * Íê³ÉÊý¾ÝÊÕ¼¯·½Ê½¡¢·¢ËÍ·½Ê½µÄÉè¼Æ(done)
-    * Íê³ÉUser Case,Deploy ModelÉè¼Æ(done)
+    * å®Œæˆæ•°æ®æ”¶é›†æ–¹å¼ã€å‘é€æ–¹å¼çš„è®¾è®¡(done)
+    * å®ŒæˆUser Case,Deploy Modelè®¾è®¡(done)
     
     
-* ¿ª·¢Êý¾ÝÊÕ¼¯¿Í»§¶Ë
-    * TrackerÊµÏÖ(ing)
-        * Ò»¸ötrackerÓÐ×Ô¼ºµÄÃû×Ö£¬¿ÉÒÔÖ´ÐÐ¸÷ÖÖÖ¸Áî
-        * Ö¸Áî¿ÉÒÔÍ¨¹ýtracker¶ÔÏóµ÷ÓÃ£¬Ò²¿ÉÒÔÍ¨¹ýÈ«¾ÖÈÎÎñ¶ÓÁÐ_wa.push()µ÷ÓÃ
-        * Ö§³Ö¶Ôcommand´¦Àí½á¹û½øÐÐ¶©ÔÄ
-    * built-in tracker·â×°£º
-        * page tracker:ÓÃÓÚ×·×ÙÒ³ÃæPV,UV,ä¯ÀÀÆ÷ÐÅÏ¢£¬ÓÃ»§ip...µÈ
-        * event tracker:ÓÃÓÚÌá¹©×Ô¶¨ÒåÊÂ¼þ×·×Ù¹¦ÄÜ
-        * performance tracker:ÓÃÓÚ¶ÔÒ³ÃæÐÔÄÜ½øÐÐ·ÖÎö
-            * Õâ²¿·ÖtrackerÖ÷ÒªÓÃÓÚÓÃ»§¶Ô×Ô¶¨Òå×ÊÔ´ÐÔÄÜ¡¢×Ô¶¨Òå¹æÔòµÄÒ³ÃæÐÔÄÜ½øÐÐ×·×Ù
-            * Í¨¹ý½«trackerµ÷ÓÃ·ÅÔÚ²»Í¬µÄÎ»ÖÃ(½Å±¾½âÎöÊ±¼ÇÂ¼Ê±¼ä),ÒÔ¼°Ö¸¶¨²»Í¬µÄ×ÊÔ´¼ÓÔØ¿ªÊ¼¡¢½áÊøÊ±¼ä£¬À´ÊµÏÖ¶¨ÖÆ¹æÔòµÄÐÔÄÜ·ÖÎö
+* å¼€å‘æ•°æ®æ”¶é›†å®¢æˆ·ç«¯
+    * Trackerå®žçŽ°(ing)
+        * ä¸€ä¸ªtrackeræœ‰è‡ªå·±çš„åå­—ï¼Œå¯ä»¥æ‰§è¡Œå„ç§æŒ‡ä»¤
+        * æŒ‡ä»¤å¯ä»¥é€šè¿‡trackerå¯¹è±¡è°ƒç”¨ï¼Œä¹Ÿå¯ä»¥é€šè¿‡å…¨å±€ä»»åŠ¡é˜Ÿåˆ—_wa.push()è°ƒç”¨
+        * æ”¯æŒå¯¹commandå¤„ç†ç»“æžœè¿›è¡Œè®¢é˜…
+    * built-in trackerå°è£…ï¼š
+        * page tracker:ç”¨äºŽè¿½è¸ªé¡µé¢PV,UV,æµè§ˆå™¨ä¿¡æ¯ï¼Œç”¨æˆ·ip...ç­‰
+        * event tracker:ç”¨äºŽæä¾›è‡ªå®šä¹‰äº‹ä»¶è¿½è¸ªåŠŸèƒ½
+        * performance tracker:ç”¨äºŽå¯¹é¡µé¢æ€§èƒ½è¿›è¡Œåˆ†æž
+            * è¿™éƒ¨åˆ†trackerä¸»è¦ç”¨äºŽç”¨æˆ·å¯¹è‡ªå®šä¹‰èµ„æºæ€§èƒ½ã€è‡ªå®šä¹‰è§„åˆ™çš„é¡µé¢æ€§èƒ½è¿›è¡Œè¿½è¸ª
+            * é€šè¿‡å°†trackerè°ƒç”¨æ”¾åœ¨ä¸åŒçš„ä½ç½®(è„šæœ¬è§£æžæ—¶è®°å½•æ—¶é—´),ä»¥åŠæŒ‡å®šä¸åŒçš„èµ„æºåŠ è½½å¼€å§‹ã€ç»“æŸæ—¶é—´ï¼Œæ¥å®žçŽ°å®šåˆ¶è§„åˆ™çš„æ€§èƒ½åˆ†æž
         * resource tracker:
-            * Ö÷Òª¶ÔÒ³ÃæÖ±½ÓÒÀÀµµÄ×ÊÔ´½øÐÐ·ÖÎö
-    * Resource Timing API,Navigation Timing APIµÄ·â×°(ing)
-        * Ìá¹©utilÑ¸ËÙ¼ÆËãresource timingµÄ¹Ø¼üÊý¾Ý
-        * Ìá¹©utilÑ¸ËÙ¼ÆËãºÍÓÃ»§¹ØÐÄµÄÒ³ÃæÊ±¼äÏà¹ØµÄÊý¾Ý
-    * ¿¼ÂÇÌá¹©Ò»Ð©½Ó¿Ú£¬ÄÜ¹»Áé»î¶Ô½ÓµÚÈý·½µÄ¸ú×ÙÆ÷
-        * ÔÚÒ»Ð©¸ú×Ù¶¯×÷·¢ÉúµÄÊ±ºò£¬¶à¸öµÚÈý·½¸ú×ÙÆ÷¶¼ÄÜÊÕµ½¸ú×Ù
+            * ä¸»è¦å¯¹é¡µé¢ç›´æŽ¥ä¾èµ–çš„èµ„æºè¿›è¡Œåˆ†æž
+    * Resource Timing API,Navigation Timing APIçš„å°è£…(ing)
+        * æä¾›utilè¿…é€Ÿè®¡ç®—resource timingçš„å…³é”®æ•°æ®
+        * æä¾›utilè¿…é€Ÿè®¡ç®—å’Œç”¨æˆ·å…³å¿ƒçš„é¡µé¢æ—¶é—´ç›¸å…³çš„æ•°æ®
+    * è€ƒè™‘æä¾›ä¸€äº›æŽ¥å£ï¼Œèƒ½å¤Ÿçµæ´»å¯¹æŽ¥ç¬¬ä¸‰æ–¹çš„è·Ÿè¸ªå™¨
+        * åœ¨ä¸€äº›è·Ÿè¸ªåŠ¨ä½œå‘ç”Ÿçš„æ—¶å€™ï¼Œå¤šä¸ªç¬¬ä¸‰æ–¹è·Ÿè¸ªå™¨éƒ½èƒ½æ”¶åˆ°è·Ÿè¸ª
 
-* ¿ª·¢Êý¾ÝÊÕ¼¯·þÎñ¶Ë(demo)
-    * ÀûÓÃcookie±êÊ¶Î¨Ò»ÓÃ»§
-    * ½â¾öÊý¾ÝÉÏ´«½Å±¾»º´æºÍÉÏ´«µØÖ·¸üÐÂµÄÃ¬¶ÜÎÊÌâ
+* å¼€å‘æ•°æ®æ”¶é›†æœåŠ¡ç«¯(demo)
+    * åˆ©ç”¨cookieæ ‡è¯†å”¯ä¸€ç”¨æˆ·
+    * è§£å†³æ•°æ®ä¸Šä¼ è„šæœ¬ç¼“å­˜å’Œä¸Šä¼ åœ°å€æ›´æ–°çš„çŸ›ç›¾é—®é¢˜
     
     
-* ¿ª·¢Êý¾Ý·ÖÎö¶Ë(demo)
-    * ¼òµ¥ÊµÏÖÒ»Ð©·ÖÎöÏîÄ¿£º
-        * PV,UVµÈ
-        * Ò³ÃæÐÔÄÜ·ÖÎö:
-            * °×ÆÁÊ±¼ä
-            * ÓÃ»§¿É²Ù×÷Ê±¼ä
-            * Ê×ÆÁÊ±¼ä
-            * ×ÜÏÂÔØÊ±¼ä
-        * ×ÊÔ´¼ÓÔØÐÔÄÜ·ÖÎö(Ö§³Ö×Ô¶¨Òå)
-        * ×Ô¶¨ÒåÊÂ¼þ·ÖÎö
-        * ÓÃ»§À´Ô´,ip,µØÓò·ÖÎö
-        * ¿Í»§¶ËÍøÂç×´¿ö·ÖÎö
-        * ä¯ÀÀÆ÷ÐÂÌØÐÔ¼æÈÝÐÔ·ÖÎö
+* å¼€å‘æ•°æ®åˆ†æžç«¯(demo)
+    * ç®€å•å®žçŽ°ä¸€äº›åˆ†æžé¡¹ç›®ï¼š
+        * PV,UVç­‰
+        * é¡µé¢æ€§èƒ½åˆ†æž:
+            * ç™½å±æ—¶é—´
+            * ç”¨æˆ·å¯æ“ä½œæ—¶é—´
+            * é¦–å±æ—¶é—´
+            * æ€»ä¸‹è½½æ—¶é—´
+        * èµ„æºåŠ è½½æ€§èƒ½åˆ†æž(æ”¯æŒè‡ªå®šä¹‰)
+        * è‡ªå®šä¹‰äº‹ä»¶åˆ†æž
+        * ç”¨æˆ·æ¥æº,ip,åœ°åŸŸåˆ†æž
+        * å®¢æˆ·ç«¯ç½‘ç»œçŠ¶å†µåˆ†æž
+        * æµè§ˆå™¨æ–°ç‰¹æ€§å…¼å®¹æ€§åˆ†æž
         * ...
 
 
