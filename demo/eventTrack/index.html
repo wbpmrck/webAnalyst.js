@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script>
+        (function(wnd,doc,tagName,mName,url,taskQueueName,tag,firstScript){
+            wnd[mName]?(wnd[mName].queueName=taskQueueName):(wnd[mName]={queueName:taskQueueName});
+            //将对queue的操作封装为_wa()调用
+            wnd[taskQueueName]=wnd[taskQueueName]||function(){
+                        (wnd[taskQueueName].q=wnd[taskQueueName].q||[]).push(arguments)
+                    };
+            wnd[mName].l=1*new Date();
+            tag=doc.createElement(tagName),
+                    firstScript=doc.getElementsByTagName(tagName)[0];
+            tag.async=1;
+            tag.src=url;
+            firstScript.parentNode.insertBefore(tag,firstScript)
+        })(window,document,'script','_webAnalyst','http://localhost:19527/wa.js','_wa');
+    </script>
+</head>
+<body>
+
+<div  style="background-color: yellow">
+    this is a  div
+    <button onclick="javascript:_wa('event','send',1,2,3,4)">click me</button>
+</div>
+
+</body>
+</html>

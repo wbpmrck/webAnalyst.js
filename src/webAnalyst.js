@@ -12,7 +12,7 @@
      */
     var _startTime = (wnd[moduleName] && wnd[moduleName].l) || (1*new Date());
 
-    var ie = win.attachEvent && !window.opera;
+    var ie = wnd.attachEvent && !window.opera;
 
 
     function entry(trackerName,method /*,param1.param2*/){
@@ -50,7 +50,7 @@
     };
 
     //处理之前留在_wa队列里的请求
-    var oldObjectName =wnd[moduleName][taskQueueName];
+    var oldObjectName =wnd[moduleName]['queueName'];
     var oldObject = wnd[oldObjectName];
     if (oldObject) {
         // 处理临时alog对象

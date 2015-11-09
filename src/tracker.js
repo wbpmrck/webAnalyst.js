@@ -63,8 +63,8 @@
         }
         var result = {};
         for (var p in data) {
-            if (self.protocolParameter.hasOwnProperty(p)) {
-                result[self.protocolParameter[p]] = data[p];
+            if (self.protocolParam.hasOwnProperty(p)) {
+                result[self.protocolParam[p]] = data[p];
             }
         }
         return result;
@@ -170,4 +170,4 @@
         }
     }
 
-})(window,document,'_webAnalyst','_tracker','_eventHub')
+})(window,document,'_webAnalyst','_tracker','_eventHub');

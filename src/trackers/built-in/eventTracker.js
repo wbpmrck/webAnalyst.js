@@ -9,8 +9,11 @@
         evt = wnd[moduleName][evtModuleName];
 
     var eventTrackerObj = tracker.createTracker('event',{
-
-    },'http://www.adsring.com');
+        category:"ct",
+        action:"at",
+        tag:'t',
+        value:'v'
+    },'http://www.adsring.com/');
 
     //提供命令:客户端可以这样调用：_wa('event','send',category, action, tag, value,function(isSuccess){})
     eventTrackerObj.send = function (category, action, tag, value,cb) {
