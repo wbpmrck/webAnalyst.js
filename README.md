@@ -9,6 +9,18 @@ A powerful tool for collecting data from browser ,analyze page speed,track user 
 below is the webAnalyst architecture:
 ![webAnalyst architecture](design/arch.jpg)
 
+
+### Usage
+
+* 目录结构：
+    * bin:构建输出
+    * demo:一些演示项目
+    * design:设计文档
+    * libs:第三方库
+    * src:源码
+    * test:测试代码
+    
+    
 ### TODOs
 * 完成构建工具的选型(done)
     * package manage:NPM
@@ -16,8 +28,21 @@ below is the webAnalyst architecture:
     
     
 * 完成数据收集框架的设计
+    * 优化API设计(ing)
+        * 参考最新google analyze的风格设计，使用_wa()函数将对数据的操作包装起来：
+            * _wa(trackerName,command,param1,param2,param3)
     * 完成API风格的设计(ing)
-        * _wa.push([trackerName,command,param1,param2,param3...])
+        * 设定account:_wa.push(['_setAccount','0123456789ABCDEF0123456789ABCDEF'])
+        * 开始时间埋点：_wa.push(['_docBegin',performance?performance.now():new Date() ])
+            * 建议在head一开始加入这段脚本，记录文档开始执行的时间起点，以便于在不支持performanceAPI的浏览器上，获得相对准确的性能数据
+        * 新增日志：_wa.push([trackerName,command,param1,param2,param3...])
+        * 自定义时间埋点：wa.push(['_moment',<name>，performance?performance.now():new Date() ])
+            * 自定义的时间埋点，可以用来计算自定义的性能数据，比如首屏渲染时间
+        * 订阅事件API:
+            * _wa.push([trackerName,'on',evtName,function(param){}])
+                * _wa.push(['_moment','on','beforeSend',function(name,value){ //handle it }])
+                * _wa.push(['_moment','on','afterSend',function(name,value){ //handle it }])
+                * _wa.push(['_moment','on','*',function(evtName,name,value){ //handle it }])
     * 完成数据收集方式、发送方式的设计(done)
     * 完成User Case,Deploy Model设计(done)
     
@@ -65,15 +90,6 @@ below is the webAnalyst architecture:
         * ...
 
 
-### Usage
-
-* 目录结构：
-    * bin:构建输出
-    * demo:一些演示项目
-    * design:设计文档
-    * libs:第三方库
-    * src:源码
-    * test:测试代码
 
 ### License
 MIT
