@@ -4,19 +4,7 @@
     <meta charset="UTF-8">
     <title></title>
     <script>
-        (function(wnd,doc,tagName,mName,url,taskQueueName,tag,firstScript){
-            wnd[mName]?(wnd[mName].queueName=taskQueueName):(wnd[mName]={queueName:taskQueueName});
-            //将对queue的操作封装为_wa()调用
-            wnd[taskQueueName]=wnd[taskQueueName]||function(){
-                        (wnd[taskQueueName].q=wnd[taskQueueName].q||[]).push(arguments)
-                    };
-            wnd[mName].l=1*new Date();
-            tag=doc.createElement(tagName),
-                    firstScript=doc.getElementsByTagName(tagName)[0];
-            tag.async=1;
-            tag.src=url;
-            firstScript.parentNode.insertBefore(tag,firstScript)
-        })(window,document,'script','_webAnalyst','http://localhost:19527/wa.js','_wa');
+        !function(e,t,n,a,s,u,c,o){e[a]?e[a].queueName=u:e[a]={queueName:u},e[u]=e[u]||function(){(e[u].q=e[u].q||[]).push(arguments)},e[a].l=1*new Date,c=t.createElement(n),o=t.getElementsByTagName(n)[0],c.async=1,c.src=s,o.parentNode.insertBefore(c,o)}(window,document,"script","_webAnalyst","http://localhost:19527/wa.js?sid1234","_wa");
     </script>
 </head>
 <body>
