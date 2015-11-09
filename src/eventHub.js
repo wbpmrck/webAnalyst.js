@@ -13,7 +13,7 @@
      * @param {Function} callback 回调函数
      ```
      */
-    function _addEventListener(element, eventName, callback) {
+    my.addEventListener =function(element, eventName, callback) {
         if (!element) {  return;  }
         try {
             if (element.addEventListener) {
@@ -33,7 +33,7 @@
      * @param {string} eventName 事件名
      * @param {Function} callback 回调函数
      */
-    function _removeEventListener(element, eventName, callback) {
+    my.removeEventListener=function(element, eventName, callback) {
         if (!element) { return; }
 
         try {

@@ -3,4 +3,5 @@ node_modules
 libs/cankao
 junit-report
 coverage
+$HOME
 *.iml

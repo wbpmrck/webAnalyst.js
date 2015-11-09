@@ -2,8 +2,21 @@
 A powerful tool for collecting data from browser ,analyze page speed,track user action and so on.
 
 
-### Versions Status
-* V 0.1.0:开发中(under development)
+### Versions Status And RouteMap
+* V 0.1.0
+    * note
+        * 只包含常用的收集功能等
+        * 支持类似ga的API和用法
+        * 复杂的自定义功能暂时不考虑
+    * status:开发中(under development)
+    
+* V 0.2.0
+    * note
+        * 增加一些文档
+        * 考虑增加tracker的异步、批量日志功能
+        * 考虑增加统计用户在页面中，使用wa命令创建自定义tracker的功能
+        * 考虑对localStorage的使用
+    * status:NONE
 
 ### architecture
 below is the webAnalyst architecture:
