@@ -349,7 +349,7 @@
         action:"at",
         tag:'t',
         value:'v'
-    },'http://www.adsring.com/');
+    },'../../et.gif');
 
     //提供命令:客户端可以这样调用：_wa('event','send',category, action, tag, value,function(isSuccess){})
     eventTrackerObj.send = function (category, action, tag, value,cb) {

@@ -67,7 +67,8 @@ below is the webAnalyst architecture:
         * 指令可以通过tracker对象调用，也可以通过全局任务队列_wa.push()调用
         * 支持对command处理结果进行订阅
     * (**ING**)built-in tracker封装：
-        * page tracker:用于追踪页面PV,UV,浏览器信息，用户ip...等
+        * (**ING**)page tracker:用于追踪页面PV,UV,**用户访问路径情况**浏览器信息，用户ip...等
+            * 对于用户访问路径，考虑定义一些规范的html attr,然后通过body拦截消息来实现自动记录
         * (**DONE**)event tracker:用于提供自定义事件追踪功能
         * performance tracker:用于对页面性能进行分析
             * 这部分tracker主要用于用户对自定义资源性能、自定义规则的页面性能进行追踪
