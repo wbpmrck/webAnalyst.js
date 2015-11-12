@@ -40,7 +40,7 @@
         return result;
     }
 
-    function Tracker(name,protocolParam,reportUrl){
+    function Tracker(name,protocolParam,reportUrl,isEnable){
         var self = this;
         evt.mixin(Tracker);
 
@@ -49,6 +49,24 @@
         self.protocolParam =protocolParam||{};//协议字段. key:name,value:simpleName.send的data数据中，只有符合协议字段的内容才会被发送
 
         self.pendingList=[];//储存tracker还无法处理的请求(可能是外部调用的方法tracker不支持，也可能是异步处理的任务)
+        self.enable = isEnable === undefined?true:isEnable;//默认开启
+
+        //保存用户使用_wa(trackerName,'set',xxx,xxx)后设置的自定义属性
+        self.props={
+            //site是用户在监控平台上，创建要监控的网站后，得到的一个网站编码，后台通过网站编码可以知道是哪个用户的哪个网站
+            site : ''//默认tracker不知道site是什么，需要用户使用_wa('*','set','site',XXXX)去初始化
+        };
+    }
+
+    /**
+     * 提供用户自定义属性的接口
+     * @param key
+     * @param val
+     */
+    Tracker.prototype.set = function (key,val) {
+        if(key && val!==undefined){
+            this.props[key] = val;
+        }
     }
 
     /**
@@ -76,6 +94,9 @@
      */
     Tracker.prototype._send = function(data,cb) {
         var self = this;//save the this ref
+        //check enable
+        if(!self.enable){return;}
+
         var url  =self.reportUrl;
         if (!url || !data) {
             return;
@@ -85,9 +106,10 @@
 
         //追加时间戳,hitType,sid
         data = merge({
-            ':0': timestamp().toString(36),
-            ':1': self.name,
-            ':2': sid
+            ':0': self.site,
+            ':1': timestamp().toString(36),
+            ':2': self.name,
+            ':3': sid
         }, data);
 
 
@@ -129,15 +151,25 @@
      * @param name
      * @param protocolParam
      * @param reportUrl
+     * @param enable
      * @returns {Tracker}
      */
-    my.createTracker = function (name, protocolParam, reportUrl) {
-        return new Tracker(name,protocolParam, reportUrl);
+    my.createTracker = function (name, protocolParam, reportUrl,enable) {
+        return new Tracker(name,protocolParam, reportUrl,enable);
     }
 
     //维护当前所有的tracker对象
     var _trackers={};//{"name":<Tracker>}
 
+    /**
+     * 提供外部一个遍历tracker对象的机会
+     * @param iterator:function(trackerName,trackerObj)
+     */
+    my.eachTracker = function (iterator) {
+        for(var t in _trackers){
+            iterator && iterator(t,_trackers[t])
+        }
+    }
     /**
      * 注册全局的tracker对象，以便于在_wa()方法中使用
      * @param name

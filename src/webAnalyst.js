@@ -14,7 +14,15 @@
 
     var ie = wnd.attachEvent && !window.opera;
 
+    //todo:通过某种方式读取tracker是否开启的配置，设置tracker(重要)
 
+
+    /**
+     * 入口
+     * 用户可以使用_wa.push([arg1,arg2,...])来调用，也可以使用_wa(arg1,arg2,...)
+     * @param trackerName
+     * @param method
+     */
     function entry(trackerName,method /*,param1.param2*/){
         //去除2个参数，留下调用方法的参数列表
         var args = Array.prototype.slice.call(arguments).splice(2);
@@ -76,6 +84,11 @@
     //覆盖_wa
     wnd[oldObjectName] = entry;
     //snippet/boot.js 无论执行顺序如何，任务队列都保存在window['_wa']里，解析这些任务并且执行
+
+    //向track发送通知，wa.js已经被加载
+    tracker.eachTracker(function (name, trackerObj) {
+        trackerObj.emit("_jsLoad");
+    })
 
 
 })(window,document,'_webAnalyst','_eventHub','_tracker','_wa');
