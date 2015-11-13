@@ -4,13 +4,13 @@
  */
 
 
-(function (wnd, doc,moduleName,evtModuleName,trackerModuleName,taskQueueName) {
+(function (wnd, doc,moduleName,utilModuleName,trackerModuleName,taskQueueName) {
     var tracker = wnd[moduleName][trackerModuleName];
 
     var _name='event',
         trackerObj = tracker.createTracker(_name,{
-            category:"ct",
-            action:"at",
+            category:"c",
+            action:"a",
             tag:'t',
             value:'v',
             x:'x',
@@ -54,4 +54,4 @@
 
     //注册
     tracker.setTracker(_name,trackerObj)
-})(window,document,'_webAnalyst','_eventHub','_tracker','_wa');
+})(window,document,'_webAnalyst','_util','_tracker','_wa');

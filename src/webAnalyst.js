@@ -5,14 +5,11 @@
  */
 
 
-(function (wnd, doc,moduleName,evtModuleName,trackerModuleName,taskQueueName) {
-    var tracker = wnd[moduleName][trackerModuleName];
-    /**
-     * 起始时间
-     */
-    var _startTime = (wnd[moduleName] && wnd[moduleName].l) || (1*new Date());
+(function (wnd, doc,moduleName,utilModuleName,trackerModuleName,taskQueueName) {
+    var tracker = wnd[moduleName][trackerModuleName],
+        wa = wnd[moduleName];
 
-    var ie = wnd.attachEvent && !window.opera;
+
 
     //todo:通过某种方式读取tracker是否开启的配置，设置tracker(重要)
 
@@ -36,7 +33,8 @@
             for(var i=0,j=trackers.length;i<j;i++){
                 var tracker = trackers[i];
                 //如果tracker有这个方法,并且不是Tracker.prototype的方法
-                if (tracker[method]&&  tracker.constructor.prototype[method] == undefined && typeof tracker[method] ==='function') {
+                //if (tracker[method]&&  tracker.constructor.prototype[method] == undefined && typeof tracker[method] ==='function') {
+                if (tracker[method]&& typeof tracker[method] ==='function') {
                     var methodFunc = tracker[method];
                     methodFunc.apply(tracker, args);
                 }
@@ -91,4 +89,4 @@
     })
 
 
-})(window,document,'_webAnalyst','_eventHub','_tracker','_wa');
+})(window,document,'_webAnalyst','_util','_tracker','_wa');

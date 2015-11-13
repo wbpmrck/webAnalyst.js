@@ -1,5 +1,5 @@
 var gulp = require('gulp');
-
+var print = require('gulp-print');
 var concat = require('gulp-concat');
 var order = require("gulp-order");
 var headerfooter = require('gulp-header-footer');
@@ -11,13 +11,13 @@ var fileinclude = require('gulp-file-include');
 
 gulp.task('main', function () {
    return gulp.src("src/**/*.js")
-
         .pipe(order([
-            "src/eventHub.js",
-            "src/tracker.js",
-            "src/trackers/**/*.js",
-            "src/webAnalyst.js"
-        ]))
+           "util.js",
+           "tracker.js",
+           "trackers/**/*.js",
+           "webAnalyst.js"
+        ],{base:'src'}))
+       .pipe(print())
         .pipe(headerfooter({
             header:';',
             footer:'',

@@ -3,9 +3,9 @@
  * Created by cuikai on 2015/11/7.
  */
 
-(function (wnd, doc, moduleName, thisModuleName,evtModuleName) {
+(function (wnd, doc, moduleName, thisModuleName,utilModuleName) {
     var my = wnd[moduleName][thisModuleName] = {},
-        evt = wnd[moduleName][evtModuleName];
+        util = wnd[moduleName][utilModuleName];
     /**
      * 起始时间
      */
@@ -18,31 +18,11 @@
     function timestamp(now) {
         return (now || new Date()) - _startTime;
     }
-    /**
-     * 合并两个对象
-     *
-     * @param {Object} a 对象1
-     * @param {Object} b 对象2
-     * @return {Object} 返回合并后的对象
-     */
-    function merge(a, b) {
-        var result = {};
-        for (var p in a) {
-            if (a.hasOwnProperty(p)) {
-                result[p] = a[p];
-            }
-        }
-        for (var q in b) {
-            if (b.hasOwnProperty(q)) {
-                result[q] = b[q];
-            }
-        }
-        return result;
-    }
+
 
     function Tracker(name,protocolParam,reportUrl,isEnable){
         var self = this;
-        evt.mixin(Tracker);
+        util.evtMixin(Tracker);
 
         self.name = name;//tracker name
         self.reportUrl=reportUrl; //tracker上报的url
@@ -105,8 +85,8 @@
         data = self._retrieveData(data);
 
         //追加时间戳,hitType,sid
-        data = merge({
-            ':0': self.site,
+        data = util.merge({
+            ':0': self.props.site,
             ':1': timestamp().toString(36),
             ':2': self.name,
             ':3': sid
@@ -202,4 +182,4 @@
         }
     }
 
-})(window,document,'_webAnalyst','_tracker','_eventHub');
+})(window,document,'_webAnalyst','_tracker','_util');

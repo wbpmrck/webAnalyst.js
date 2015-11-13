@@ -4,7 +4,21 @@
  */
 
 (function (wnd, doc,moduleName,thisModuleName) {
-    var my = wnd[moduleName][thisModuleName] = {};
+    var my = wnd[moduleName][thisModuleName] = {},
+        wa = wnd[moduleName];
+
+
+    var slotSeed=1;
+    var ALL_TOKEN='*';
+
+    /**
+     * util保存一些常用的函数，其他模块需要使用可以直接获取
+     *
+     * @notice:由于property无法压缩，所以源码采用尽量简写的方式，通过注释表明实际方法名
+     *
+     * @type {{}}
+     * @private
+     */
     /**
      * DOM事件API封装：添加事件处理函数
      *
@@ -13,7 +27,8 @@
      * @param {Function} callback 回调函数
      ```
      */
-    my.addEventListener =function(element, eventName, callback) {
+    /*addEventListener*/
+    my.on=function(element, eventName, callback) {
         if (!element) {  return;  }
         try {
             if (element.addEventListener) {
@@ -24,7 +39,7 @@
             }
         }
         catch (ex) {}
-    }
+    };
 
     /**
      * DOM事件API封装：注销事件绑定
@@ -33,7 +48,8 @@
      * @param {string} eventName 事件名
      * @param {Function} callback 回调函数
      */
-    my.removeEventListener=function(element, eventName, callback) {
+    /*removeEventListener*/
+    my.off=function(element, eventName, callback) {
         if (!element) { return; }
 
         try {
@@ -45,10 +61,47 @@
             }
         }
         catch (ex) {}
-    }
+    };
+    /**
+     * 合并两个对象
+     *
+     * @param {Object} a 对象1
+     * @param {Object} b 对象2
+     * @return {Object} 返回合并后的对象
+     */
+    my.merge = function(a, b) {
+        var result = {};
+        for (var p in a) {
+            if (a.hasOwnProperty(p)) {
+                result[p] = a[p];
+            }
+        }
+        for (var q in b) {
+            if (b.hasOwnProperty(q)) {
+                result[q] = b[q];
+            }
+        }
+        return result;
+    };
 
-    var slotSeed=1;
-    var ALL_TOKEN='*';
+
+    /**
+     * _info里保存一些对浏览器分析的结果，其他模块中如果需要使用，可以直接使用
+     */
+    var n = navigator,
+        d = document,
+        b = d.body;
+    wa._info ={
+        //脚本被加载的开始时间
+        start:(wnd[moduleName] && wnd[moduleName].l) || (1*new Date()),
+        cookieEnabled:+n.cookieEnabled,
+        javaEnabled:+n.javaEnabled(),
+        language : n.language || n.browserLanguage || n.systemLanguage || n.userLanguage || "",
+        //是否ie浏览器
+        ie : +(wnd.attachEvent && !wnd.opera),
+        //是否opera
+        opera : +(wnd.opera)
+    };
 
     function EventEmitter(){};
     EventEmitter.prototype	= {
@@ -149,7 +202,7 @@
 
 
     my.EventEmitter	= EventEmitter;
-    my.mixin	= function(destObject){
+    my.evtMixin	= function(destObject){
         var props	= ['on','once', 'off', 'emit'];
         for(var i = 0; i < props.length; i ++){
             if( typeof destObject === 'function' ){
@@ -159,4 +212,4 @@
             }
         }
     }
-})(window,document,'_webAnalyst','_eventHub');
+})(window,document,'_webAnalyst','_util');
