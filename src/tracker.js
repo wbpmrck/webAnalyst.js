@@ -37,6 +37,10 @@
             site : ''//默认tracker不知道site是什么，需要用户使用_wa('*','set','site',XXXX)去初始化
         };
     }
+    Tracker.prototype.setEnable = function (e){
+        this.enable = !!e;
+    };
+
 
     /**
      * 提供用户自定义属性的接口
@@ -62,6 +66,9 @@
         var result = {};
         for (var p in data) {
             if (self.protocolParam.hasOwnProperty(p)) {
+
+                //替换占位符
+                util.replaceHolder()
                 result[self.protocolParam[p]] = data[p];
             }
         }
@@ -84,13 +91,14 @@
         //过滤不上报的字段，并获取缩写
         data = self._retrieveData(data);
 
+
         //追加时间戳,hitType,sid
-        data = util.merge({
-            ':0': self.props.site,
-            ':1': timestamp().toString(36),
-            ':2': self.name,
-            ':3': sid
-        }, data);
+        data = util.merge(data,{
+            '_s': self.props.site,
+            '_t': timestamp().toString(36),
+            '_n': self.name,
+            '_i': sid
+        });
 
 
         //发送事件

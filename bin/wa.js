@@ -63,7 +63,7 @@
         catch (ex) {}
     };
     /**
-     * 合并两个对象
+     * 合并两个对象(b will overwrite a)
      *
      * @param {Object} a 对象1
      * @param {Object} b 对象2
@@ -300,12 +300,12 @@
         data = self._retrieveData(data);
 
         //追加时间戳,hitType,sid
-        data = util.merge({
-            ':0': self.props.site,
-            ':1': timestamp().toString(36),
-            ':2': self.name,
-            ':3': sid
-        }, data);
+        data = util.merge(data,{
+            '_s': self.props.site,
+            '_t': timestamp().toString(36),
+            '_n': self.name,
+            '_i': sid
+        });
 
 
         //发送事件
@@ -490,18 +490,18 @@
 
     var _name='pageView',
         trackerObj = tracker.createTracker(_name,{
-        pf:"11",
-        vd:"10",
-        url:"9",
-        ft:"8",
-        cd:"7",
-        dx:'6',
-        dy:'5',
-        cookieEnabled:'4',
-        javaEnabled:'3',
-        language:'2',
-        ie:'1',
-        opera:'0'
+        pf:"l",
+        vd:"k",
+        url:"j",
+        ft:"i",
+        cd:"h",
+        dx:'g',
+        dy:'f',
+        cookieEnabled:'e',
+        javaEnabled:'d',
+        language:'c',
+        ie:'b',
+        opera:'a'
     },'../../et.gif',true);//页面跟踪默认开启
 
     //提供命令:客户端可以这样调用：_wa('pageView','send',function(isSuccess){})
@@ -551,7 +551,7 @@
             +!!(wnd.performance && wnd.performance.timing)
         ].join(''),2).toString(36),//为了减少encodeURIComponent时带来的开销，使用'1111'或'1011'这样的字符来分别表示每一位是否支持.所以不带分隔符
 
-            //当前访问url
+        //当前访问url
         url: l.href,
         //颜色深度
         cd: s.colorDepth || 0,
@@ -584,10 +584,7 @@
     var tracker = wnd[moduleName][trackerModuleName],
         wa = wnd[moduleName];
 
-
-
     //todo:通过某种方式读取tracker是否开启的配置，设置tracker(重要)
-
 
     /**
      * 入口

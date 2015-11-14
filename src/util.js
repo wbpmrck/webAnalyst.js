@@ -63,7 +63,7 @@
         catch (ex) {}
     };
     /**
-     * 合并两个对象
+     * 合并两个对象(b will overwrite a)
      *
      * @param {Object} a 对象1
      * @param {Object} b 对象2
@@ -83,6 +83,19 @@
         }
         return result;
     };
+    //用于替换java的properties风格的占位符 ${xxx}
+    var _regP = /(\$)\s*\s*({(?:[^\{}\r\n\f]|\\[\s\S])*})\s*/g;
+    /**
+     * 调用该方法完成str内部占位符的替换
+     * @param str
+     * @param fn:function(holder){return 'replacedString'}
+     */
+    my.replaceHolder = function(str,fn){
+        str && str.replace(_regP, function (a,b,c) {
+            return fn(c.substr(1,c.length-2))
+        });
+    };
+    my.isNumber =function(obj) { return !isNaN(parseFloat(obj)) }
 
 
     /**

@@ -85,7 +85,11 @@ below is the webAnalyst architecture:
             * 主要对页面直接依赖的资源进行分析
         * ErrorTracker
             * 负责对页面中存在的js错误、资源加载错误等错误情况进行收集和传递
-    
+        
+    * 允许社区自定义:
+        * (**ING**)自定义tracker:
+            * 目的：用户可以使用_wa('new','<trackerName>',factoryFunc)
+                * 内部:调用factoryFunc创建tracker,并且注册到全局tracker中心
     * 优化wa.js:
         * 提供配置功能，可以灵活配置启用哪些tracker,禁用哪些tracker
     * 考虑提供一些接口，能够灵活对接第三方的跟踪器

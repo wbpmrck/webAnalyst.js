@@ -28,18 +28,18 @@
 
     var _name='pageView',
         trackerObj = tracker.createTracker(_name,{
-        pf:"11",
-        vd:"10",
-        url:"9",
-        ft:"8",
-        cd:"7",
-        dx:'6',
-        dy:'5',
-        cookieEnabled:'4',
-        javaEnabled:'3',
-        language:'2',
-        ie:'1',
-        opera:'0'
+        pf:"l",
+        vd:"k",
+        url:"j",
+        ft:"i",
+        cd:"h",
+        dx:'g',
+        dy:'f',
+        cookieEnabled:'e',
+        javaEnabled:'d',
+        language:'c',
+        ie:'b',
+        opera:'a'
     },'${reportUrl.pageTracker}',true);//页面跟踪默认开启
 
     //提供命令:客户端可以这样调用：_wa('pageView','send',function(isSuccess){})
@@ -89,7 +89,7 @@
             +!!(wnd.performance && wnd.performance.timing)
         ].join(''),2).toString(36),//为了减少encodeURIComponent时带来的开销，使用'1111'或'1011'这样的字符来分别表示每一位是否支持.所以不带分隔符
 
-            //当前访问url
+        //当前访问url
         url: l.href,
         //颜色深度
         cd: s.colorDepth || 0,

@@ -9,11 +9,24 @@
     var tracker = wnd[moduleName][trackerModuleName],
         wa = wnd[moduleName];
 
-
-
     //todo:通过某种方式读取tracker是否开启的配置，设置tracker(重要)
 
 
+    /**
+     * 尝试执行内置指令，如果可以执行，则返回true,否则返回false
+     * @param cmd
+     * @returns {boolean}
+     * @private
+     */
+    function _cmd(cmd){
+        var executed = false,
+            commands={
+                'new': function (name,factory) {
+
+                }
+            };
+        return executed;
+    }
     /**
      * 入口
      * 用户可以使用_wa.push([arg1,arg2,...])来调用，也可以使用_wa(arg1,arg2,...)
