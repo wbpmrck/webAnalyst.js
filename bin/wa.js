@@ -83,6 +83,19 @@
         }
         return result;
     };
+    //用于替换java的properties风格的占位符 ${xxx}
+    var _regP = /(\$)\s*\s*({(?:[^\{}\r\n\f]|\\[\s\S])*})\s*/g;
+    /**
+     * 调用该方法完成str内部占位符的替换
+     * @param str
+     * @param fn:function(holder){return 'replacedString'}
+     */
+    my.replaceHolder = function(str,fn){
+        str && str.replace(_regP, function (a,b,c) {
+            return fn(c.substr(1,c.length-2))
+        });
+    };
+    my.isNumber =function(obj) { return !isNaN(parseFloat(obj)) }
 
 
     /**
@@ -252,6 +265,10 @@
             site : ''//默认tracker不知道site是什么，需要用户使用_wa('*','set','site',XXXX)去初始化
         };
     }
+    Tracker.prototype.setEnable = function (e){
+        this.enable = !!e;
+    };
+
 
     /**
      * 提供用户自定义属性的接口
@@ -261,6 +278,16 @@
     Tracker.prototype.set = function (key,val) {
         if(key && val!==undefined){
             this.props[key] = val;
+        }
+    }
+    /**
+     * 提供用户获取自定义属性的接口
+     * @param key
+     * @param val
+     */
+    Tracker.prototype.get = function (key) {
+        if(key){
+            return this.props[key];
         }
     }
 
@@ -277,6 +304,9 @@
         var result = {};
         for (var p in data) {
             if (self.protocolParam.hasOwnProperty(p)) {
+
+                //替换占位符
+                util.replaceHolder()
                 result[self.protocolParam[p]] = data[p];
             }
         }
@@ -299,10 +329,12 @@
         //过滤不上报的字段，并获取缩写
         data = self._retrieveData(data);
 
+
         //追加时间戳,hitType,sid
         data = util.merge(data,{
             '_s': self.props.site,
-            '_t': timestamp().toString(36),
+            //'_t': timestamp().toString(36),
+            '_t': (+new Date()).toString(36),
             '_n': self.name,
             '_i': sid
         });
@@ -410,11 +442,13 @@
 
 
 (function (wnd, doc,moduleName,utilModuleName,trackerModuleName,taskQueueName) {
-    var tracker = wnd[moduleName][trackerModuleName];
+    var tracker = wnd[moduleName][trackerModuleName],
+        _wa = wnd[taskQueueName],
+        util = wnd[moduleName][utilModuleName];
 
     var _name='event',
         trackerObj = tracker.createTracker(_name,{
-            category:"c",
+            category:"c",//内置的分类:'_auto'
             action:"a",
             tag:'t',
             value:'v',
@@ -446,15 +480,86 @@
                 category:category,
                 action:action,
                 tag:tag,
-                value:value
+                value:value,
+                x:x,
+                y:y,
+                dom:dom
             },cb);
         }
     };
 
+    var d=document,
+        b = d.body;
+
+    var
+        /**
+         * 通过DOM对象，获取DOM对象描述信息(type-id):如：div-login
+         * @param dom
+         * @private
+         */
+        _getDOMInfo = function (dom) {
+            if(!dom){
+                return ""
+            }
+            var tName = dom.tagName,
+                id= dom.getAttribute("id")||'';
+            return [tName,id].join("-")
+        },
+        /**
+         * 根据事件信息，获取用户触发动作的手指/鼠标位置
+         * @param evt
+         * @private
+         */
+        _getTouchPos = function (evt) {
+            var e = evt.type==='touchstart'? evt.touches[0]:evt;
+            return {
+                x: e.pageX ,
+                y: e.pageY
+            }
+        }
+        _events=['mousedown','touchstart'],
+        _builtInCategory='_auto', //auto模式下，自动跟踪所使用的事件分类
+        _onUserEvt = function (evt) {
+            var
+                e = evt || window.event,
+                name = e.type||'unknown',
+                t = e.target || e.srcElement,
+                _waAttr,
+                _arg;
+            if(t){
+                //检查事件对象DOM是否具有_wa属性
+                _waAttr = t.getAttribute('_wa');
+                //只有当设定了_wa属性的DOM事件才会收集
+                //如果是参数数组，则使用自定义方法来调用
+                if(_waAttr && _waAttr[0]==='[' &&_waAttr[_waAttr.length-1]===']'){
+                    _arg = eval(_waAttr);//'[1,2,3]' => [1,2,3]
+                    _wa.apply(this,_arg);
+                }
+                //如果没有,则使用默认方式收集数据
+                //如果disableAuto标记没有设置，则自动上传
+                else if(!trackerObj.get("disableAuto")){
+                    var d= util.merge(_getTouchPos(e),{
+                        category:_builtInCategory,//_auto
+                        action:name, //'click','keydown','mousedown','touchstart'
+                        tag:'', //
+                        value:1,
+                        dom:_getDOMInfo(t)
+                    });
+                    alert(name+":"+JSON.stringify(d));
+                    //生成跟踪数据，发送到后台
+                    trackerObj.send(d)
+                }
+            }
+
+        };
     //当wa.js加载时，外壳会通知每个tracker
     //在此可以做一些默认操作
     trackerObj.on('_jsLoad', function () {
-
+        //在body上捕获尽可能多的事件
+        for(var i=0,j=_events.length;i<j;i++){
+            var e = _events[i];
+            util.on(b,e, function(evt){_onUserEvt(evt)});
+        }
     });
 
     //注册
@@ -582,9 +687,37 @@
 
 (function (wnd, doc,moduleName,utilModuleName,trackerModuleName,taskQueueName) {
     var tracker = wnd[moduleName][trackerModuleName],
+        util = wnd[moduleName][utilModuleName],
         wa = wnd[moduleName];
 
     //todo:通过某种方式读取tracker是否开启的配置，设置tracker(重要)
+
+
+    var _commands={
+            /**
+             * 命令 newWaTracker:创建一个tracker,其行为继承自tracker.js,并注册到全局tracker
+             * @param name
+             * @param factory(util).this = _tracker
+             */
+            'newWaTracker': function (name, protocolParam, reportUrl,enable,factory) {
+                var _tracker =tracker.createTracker(name,protocolParam,reportUrl,enable);//创建一个tracker
+                factory && factory.call(_tracker,util);
+
+                //注册
+                tracker.setTracker(name,_tracker)
+            },
+            /**
+             * 命令 newTracker:创建一个完全自定义的tracker,并注册到全局tracker
+             * 注意，完全自定义的tracker如果能具备emit,on方法，则可以享受到wa提供的各种事件通知服务
+             * @param factory(util)
+             */
+            newTracker: function (name,factory) {
+                var _tracker = factory(util);
+                //注册
+                tracker.setTracker(name,_tracker)
+            }
+        },
+        _slice = Array.prototype.slice;
 
     /**
      * 入口
@@ -594,7 +727,17 @@
      */
     function entry(trackerName,method /*,param1.param2*/){
         //去除2个参数，留下调用方法的参数列表
-        var args = Array.prototype.slice.call(arguments).splice(2);
+        var argsCmd = _slice.call(arguments).slice(1),
+            args = argsCmd.slice(1);
+
+
+        //先看是否内置命令
+        var cmd = _commands[trackerName];
+        if(cmd){
+            cmd.apply(wa,argsCmd);
+            return;
+        }
+
         var trackers = entry.getTracker(trackerName);
 
         if(trackers){
@@ -657,7 +800,7 @@
 
     //向track发送通知，wa.js已经被加载
     tracker.eachTracker(function (name, trackerObj) {
-        trackerObj.emit("_jsLoad");
+        trackerObj.emit&&trackerObj.emit("_jsLoad");
     })
 
 

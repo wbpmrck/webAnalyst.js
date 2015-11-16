@@ -7,13 +7,20 @@
         @@include('../../bin/boot.js')
         //
         _wa('*','set','site','UA-001')
+//        _wa('event','set','disableAuto',true) //注释这句，就可以看到点击div的时候，会自动触发事件收集
     </script>
 </head>
 <body>
 
-<div  style="background-color: yellow">
+<div id="container"  style="background-color: yellow" _wa="auto">
     this is a  div
-    <button onclick="javascript:_wa('event','send','we','are','your','custom params')">click me,and open F12 to see the request~</button>
+    <button  _wa="auto" onclick="javascript:_wa('event','send','we','are','your','custom params')">click me,and open F12 to see the request~</button>
+    <div  _wa="auto" id="inner1" style="background-color: #0086b3; margin-top: 500px; height: 300px;">
+        this is a inner1 div,click me and see track events
+        <div  _wa="auto" id="inner2" style="background-color: #219161; margin-top: 200px; height: 400px;">
+            this is a inner2 div,click me and see track events
+        </div>
+    </div>
 </div>
 
 </body>

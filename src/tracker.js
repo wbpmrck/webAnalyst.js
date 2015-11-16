@@ -52,6 +52,16 @@
             this.props[key] = val;
         }
     }
+    /**
+     * 提供用户获取自定义属性的接口
+     * @param key
+     * @param val
+     */
+    Tracker.prototype.get = function (key) {
+        if(key){
+            return this.props[key];
+        }
+    }
 
     /**
      * 根据传输协议定义，获取data中需要report到服务端的字段个数、字段名
@@ -95,7 +105,8 @@
         //追加时间戳,hitType,sid
         data = util.merge(data,{
             '_s': self.props.site,
-            '_t': timestamp().toString(36),
+            //'_t': timestamp().toString(36),
+            '_t': (+new Date()).toString(36),
             '_n': self.name,
             '_i': sid
         });

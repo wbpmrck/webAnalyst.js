@@ -7,26 +7,38 @@
 
 (function (wnd, doc,moduleName,utilModuleName,trackerModuleName,taskQueueName) {
     var tracker = wnd[moduleName][trackerModuleName],
+        util = wnd[moduleName][utilModuleName],
         wa = wnd[moduleName];
 
     //todo:通过某种方式读取tracker是否开启的配置，设置tracker(重要)
 
 
-    /**
-     * 尝试执行内置指令，如果可以执行，则返回true,否则返回false
-     * @param cmd
-     * @returns {boolean}
-     * @private
-     */
-    function _cmd(cmd){
-        var executed = false,
-            commands={
-                'new': function (name,factory) {
+    var _commands={
+            /**
+             * 命令 newWaTracker:创建一个tracker,其行为继承自tracker.js,并注册到全局tracker
+             * @param name
+             * @param factory(util).this = _tracker
+             */
+            'newWaTracker': function (name, protocolParam, reportUrl,enable,factory) {
+                var _tracker =tracker.createTracker(name,protocolParam,reportUrl,enable);//创建一个tracker
+                factory && factory.call(_tracker,util);
 
-                }
-            };
-        return executed;
-    }
+                //注册
+                tracker.setTracker(name,_tracker)
+            },
+            /**
+             * 命令 newTracker:创建一个完全自定义的tracker,并注册到全局tracker
+             * 注意，完全自定义的tracker如果能具备emit,on方法，则可以享受到wa提供的各种事件通知服务
+             * @param factory(util)
+             */
+            newTracker: function (name,factory) {
+                var _tracker = factory(util);
+                //注册
+                tracker.setTracker(name,_tracker)
+            }
+        },
+        _slice = Array.prototype.slice;
+
     /**
      * 入口
      * 用户可以使用_wa.push([arg1,arg2,...])来调用，也可以使用_wa(arg1,arg2,...)
@@ -35,7 +47,17 @@
      */
     function entry(trackerName,method /*,param1.param2*/){
         //去除2个参数，留下调用方法的参数列表
-        var args = Array.prototype.slice.call(arguments).splice(2);
+        var argsCmd = _slice.call(arguments).slice(1),
+            args = argsCmd.slice(1);
+
+
+        //先看是否内置命令
+        var cmd = _commands[trackerName];
+        if(cmd){
+            cmd.apply(wa,argsCmd);
+            return;
+        }
+
         var trackers = entry.getTracker(trackerName);
 
         if(trackers){
@@ -98,7 +120,7 @@
 
     //向track发送通知，wa.js已经被加载
     tracker.eachTracker(function (name, trackerObj) {
-        trackerObj.emit("_jsLoad");
+        trackerObj.emit&&trackerObj.emit("_jsLoad");
     })
 
 
