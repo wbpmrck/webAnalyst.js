@@ -7,16 +7,6 @@
         @@include('../../bin/boot.js')
         //
         _wa('*','set','site','UA-001')
-        _wa('newWaTracker','custom1',{customP1:'p1',customP2:'p2'},'../../_wa.gif',true, function (util) {
-            this.send = function (customP1,customP2) {
-                this._send({customP1:customP1,customP2:customP2});
-            }
-            //自定义tracker 可以通过处理_jsLoad事件，来进行默认的初始化处理
-            this.on('_jsLoad', function () {
-                this._send({customP1:'script',customP2:'just load!'})
-            });
-        })
-//        _wa('event','set','disableAuto',true) //注释这句，就可以看到点击div的时候，会自动触发事件收集
     </script>
 </head>
 <body>

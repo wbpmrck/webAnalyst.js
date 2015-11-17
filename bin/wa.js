@@ -455,7 +455,7 @@
             x:'x',
             y:'y',
             dom:'d'
-    },'../../et.gif',true);//事件跟踪默认开启
+    },'../../_wa.gif',true);//事件跟踪默认开启
 
     //提供命令:客户端可以这样调用：_wa('event','send',category, action, tag, value,function(isSuccess){})
     //        也可以这样调用：_wa('event','send',{category:1, action:2, tag:3, value:4},function(isSuccess){})
@@ -541,11 +541,11 @@
                     var d= util.merge(_getTouchPos(e),{
                         category:_builtInCategory,//_auto
                         action:name, //'click','keydown','mousedown','touchstart'
-                        tag:'', //
+                        tag:'',
                         value:1,
                         dom:_getDOMInfo(t)
                     });
-                    alert(name+":"+JSON.stringify(d));
+                    //alert(name+":"+JSON.stringify(d));
                     //生成跟踪数据，发送到后台
                     trackerObj.send(d)
                 }
@@ -607,7 +607,7 @@
         language:'c',
         ie:'b',
         opera:'a'
-    },'../../et.gif',true);//页面跟踪默认开启
+    },'../../_wa.gif',true);//页面跟踪默认开启
 
     //提供命令:客户端可以这样调用：_wa('pageView','send',function(isSuccess){})
     /**

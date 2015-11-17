@@ -108,7 +108,7 @@
                         value:1,
                         dom:_getDOMInfo(t)
                     });
-                    alert(name+":"+JSON.stringify(d));
+                    //alert(name+":"+JSON.stringify(d));
                     //生成跟踪数据，发送到后台
                     trackerObj.send(d)
                 }
