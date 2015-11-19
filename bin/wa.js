@@ -97,6 +97,62 @@
     };
     my.isNumber =function(obj) { return !isNaN(parseFloat(obj)) }
 
+    /**
+     * 获取当前时间(以ms表示),最大精确到小数点后2位
+     * 注意，如果浏览器支持performance.now,会使用,否则使用Date
+     * @returns {number}
+     */
+    my.nowInMS = function () {
+        if(wnd.performance){
+            return performance.now()
+        }else{
+            return +newDate()
+        }
+    }
+
+    /**
+     * 注意，这个domReady是为了检测DOMContentLoad时间而设计，为尽量精确，所以没有使用计时器触发回调.和jquery等库的方式不同
+     * @param cb
+     */
+    my.domReady = function (cb) {
+        var d = wnd.document,
+            done = false;
+        if(d.readyState === "complete"){
+            cb && cb()
+        }else if(d.addEventListener){
+            // Standards-based browsers support DOMContentLoaded
+            my.on(d,'DOMContentLoaded',cb)
+        }else{
+            // If IE
+            // only fire once
+            var fire = function () {
+                if (!done) {
+                    done = true;
+                    cb && cb();
+                }
+            };
+            // polling for no errors
+            (function () {
+                try {
+                    // throws errors until after ondocumentready
+                    d.documentElement.doScroll('left');
+                } catch (e) {
+                    setTimeout(arguments.callee, 50);
+                    return;
+                }
+                // no errors, fire
+                fire();
+            })();
+
+            // trying to always fire before onload
+            my.on(d,'readystatechange',function() {
+                if (d.readyState == 'complete') {
+                    my.off(d,'readystatechange',arguments.callee)
+                    fire();
+                }
+            });
+        }
+    };
 
     /**
      * _info里保存一些对浏览器分析的结果，其他模块中如果需要使用，可以直接使用
@@ -503,7 +559,7 @@
             }
             var tName = dom.tagName,
                 id= dom.getAttribute("id")||'';
-            return [tName,id].join("-")
+            return id?[tName,id].join("-"):tName
         },
         /**
          * 根据事件信息，获取用户触发动作的手指/鼠标位置
@@ -614,21 +670,21 @@
      * 提交页面访问日志
      * @param cb
      */
-    trackerObj.send = function (cb) {
-        //todo:通过内置方法获取相关参数并发送
-        //使用对象传参
-        if(typeof category ==='object'){
-            cb = action;
-            return  this._send(category,cb);
-        }else{
-            return this._send({
-                category:category,
-                action:action,
-                tag:tag,
-                value:value
-            },cb);
-        }
-    };
+    //trackerObj.send = function (cb) {
+    //    //todo:通过内置方法获取相关参数并发送
+    //    //使用对象传参
+    //    if(typeof category ==='object'){
+    //        cb = action;
+    //        return  this._send(category,cb);
+    //    }else{
+    //        return this._send({
+    //            category:category,
+    //            action:action,
+    //            tag:tag,
+    //            value:value
+    //        },cb);
+    //    }
+    //};
     var n = navigator,
         d = document,
         s = screen,
@@ -674,10 +730,102 @@
     //注册
     tracker.setTracker(_name,trackerObj)
 })(window,document,'_webAnalyst','_util','_tracker','_wa');
-;/**
+;/**负责处理页面性能相关数据的收集工作
  * Created by cuikai on 2015/11/7.
  */
 
+(function (wnd, doc,moduleName,utilModuleName,trackerModuleName,taskQueueName) {
+    var tracker = wnd[moduleName][trackerModuleName],
+        _wa = wnd[taskQueueName],
+        util = wnd[moduleName][utilModuleName];
+
+    var _name='performance',
+
+
+        _startTime = (wnd[moduleName] && wnd[moduleName].l) ||0;
+        //data有2个用处，一个是用于定义字段，一个是存储发送数据
+        data={
+            //--------calculate result data
+            start:'s',//页面开始下载的时间(如果有timing API,则使用naviationStart,否则使用wa脚本收集到的入口时间)
+            contentLoad:"cl", //DOM加载完的相对时刻
+            load:"ld", //全部同步资源加载完的相对时刻
+            paint:"pt", //页面开始渲染的相对时刻
+            firstScreen:"fs", //首屏渲染完(待实现)的相对时刻
+
+            //--------origin timing data
+            rds:"t1", //redirectStart
+            rde:"t2", //redirectEnd
+            dls:'t3', //domainLookupStart
+            dle:'t4', //domainLookupEnd
+            cs:'t5', //connectStart
+            ce:'t6', //connectEnd
+            rqs:'t7', //requestStart
+            rps:'t8', //responseStart
+            rpe:'t9', //responseEnd
+            dl:'ta', //domLoading
+            dc:'tb', //domComplete
+            les:'tc', //loadEventStart
+            lee:'td' //loadEventEnd
+        },
+        trackerObj = tracker.createTracker(_name,'../../_wa.gif',data,true);//事件跟踪默认开启
+
+    //clear data
+    for(var i in data){
+        data[i] = undefined
+    }
+
+    var d=document,
+        b = d.body;
+
+    var
+        _now = util.nowInMS,
+
+        /**
+         * 上报性能数据
+         * @private
+         */
+        _do = function () {
+
+            var t = wnd.performance || wnd.webkitPerformance,
+                t = t && t.timing;
+
+            //start
+            var s =data.start = t?(t.navigationStart||_startTime||undefined):(_startTime||undefined);
+
+            //只有获取到网页的开始加载时间，后续的数据收集才有意义
+            if(s){
+                //转化DOMReady的时间，从绝对时间=>相对时刻
+                data.contentLoad -= s;
+                //转化load的相对时刻
+                data.load -= s;
+
+                //todo:计算 firstPaint (白屏时间，也即浏览器开始渲染的时间)
+
+                //todo:计算firstScreen(暂时不实现，需要考虑如何定义首屏，和获取加载完成的时间)
+                //todo:通过performanceAPI获取其他参数
+                //发送
+            }
+
+        };
+    //当wa.js加载时，外壳会通知每个tracker
+    //在此可以做一些默认操作
+    trackerObj.on('_jsLoad', function () {
+
+        //DOMContentLoad
+        util.domReady(function () {
+            data.contentLoad = _now();
+        });
+
+        //当load事件触发后，才去收集性能数据，这样数据比较全
+        util.on(wnd,'load', function () {
+            data.load = _now();
+            setTimeout(_do,500)
+        })
+    });
+
+    //注册
+    tracker.setTracker(_name,trackerObj)
+})(window,document,'_webAnalyst','_util','_tracker','_wa');
 ;/**
  * 管理所有的tracker
  * 从脚本加载之前就准备好的任务队列里取出任务，进行执行

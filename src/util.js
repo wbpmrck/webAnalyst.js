@@ -97,6 +97,62 @@
     };
     my.isNumber =function(obj) { return !isNaN(parseFloat(obj)) }
 
+    /**
+     * 获取当前时间(以ms表示),最大精确到小数点后2位
+     * 注意，如果浏览器支持performance.now,会使用,否则使用Date
+     * @returns {number}
+     */
+    my.nowInMS = function () {
+        if(wnd.performance){
+            return performance.now()
+        }else{
+            return +newDate()
+        }
+    }
+
+    /**
+     * 注意，这个domReady是为了检测DOMContentLoad时间而设计，为尽量精确，所以没有使用计时器触发回调.和jquery等库的方式不同
+     * @param cb
+     */
+    my.domReady = function (cb) {
+        var d = wnd.document,
+            done = false;
+        if(d.readyState === "complete"){
+            cb && cb()
+        }else if(d.addEventListener){
+            // Standards-based browsers support DOMContentLoaded
+            my.on(d,'DOMContentLoaded',cb)
+        }else{
+            // If IE
+            // only fire once
+            var fire = function () {
+                if (!done) {
+                    done = true;
+                    cb && cb();
+                }
+            };
+            // polling for no errors
+            (function () {
+                try {
+                    // throws errors until after ondocumentready
+                    d.documentElement.doScroll('left');
+                } catch (e) {
+                    setTimeout(arguments.callee, 50);
+                    return;
+                }
+                // no errors, fire
+                fire();
+            })();
+
+            // trying to always fire before onload
+            my.on(d,'readystatechange',function() {
+                if (d.readyState == 'complete') {
+                    my.off(d,'readystatechange',arguments.callee)
+                    fire();
+                }
+            });
+        }
+    };
 
     /**
      * _info里保存一些对浏览器分析的结果，其他模块中如果需要使用，可以直接使用

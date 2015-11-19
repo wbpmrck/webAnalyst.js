@@ -47,21 +47,21 @@
      * 提交页面访问日志
      * @param cb
      */
-    trackerObj.send = function (cb) {
-        //todo:通过内置方法获取相关参数并发送
-        //使用对象传参
-        if(typeof category ==='object'){
-            cb = action;
-            return  this._send(category,cb);
-        }else{
-            return this._send({
-                category:category,
-                action:action,
-                tag:tag,
-                value:value
-            },cb);
-        }
-    };
+    //trackerObj.send = function (cb) {
+    //    //todo:通过内置方法获取相关参数并发送
+    //    //使用对象传参
+    //    if(typeof category ==='object'){
+    //        cb = action;
+    //        return  this._send(category,cb);
+    //    }else{
+    //        return this._send({
+    //            category:category,
+    //            action:action,
+    //            tag:tag,
+    //            value:value
+    //        },cb);
+    //    }
+    //};
     var n = navigator,
         d = document,
         s = screen,

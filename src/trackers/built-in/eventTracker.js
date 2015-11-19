@@ -66,7 +66,7 @@
             }
             var tName = dom.tagName,
                 id= dom.getAttribute("id")||'';
-            return [tName,id].join("-")
+            return id?[tName,id].join("-"):tName
         },
         /**
          * 根据事件信息，获取用户触发动作的手指/鼠标位置
