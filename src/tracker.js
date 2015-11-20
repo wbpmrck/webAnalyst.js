@@ -15,6 +15,13 @@
      */
     var sid =  ((+new Date()).toString(36) + Math.random().toString(36).substr(2, 4));
 
+    /**
+     * 暴露sid数值给外部获取
+     * @returns {string}
+     */
+    util.getTrackerSid = function () {
+        return sid;
+    }
     function timestamp(now) {
         return (now || new Date()) - _startTime;
     }
@@ -39,6 +46,9 @@
     }
     Tracker.prototype.setEnable = function (e){
         this.enable = !!e;
+    };
+    Tracker.prototype.setReportUrl = function (url){
+        this.reportUrl = url;
     };
 
 
