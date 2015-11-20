@@ -122,7 +122,7 @@
 
         var items = [];
         for (var key in data) {
-            if (data[key]) {
+            if (undefined !== data[key]) {
                 items.push(key + '=' + encodeURIComponent(data[key]));
             }
         }

@@ -6,17 +6,27 @@
     <script>
         !function(e,n,t,a,s,u,c,m){e[a]?e[a].queueName=u:e[a]={queueName:u},e[u]=e[u]||function(){(e[u].q=e[u].q||[]).push(arguments)},e[a].l=1*new Date,c=n.createElement(t),m=n.getElementsByTagName(t)[0],c.async=1,c.src=s,m.parentNode.insertBefore(c,m)}(window,document,"script","_webAnalyst","../../wa.js?sid1234","_wa");
         //
-        _wa('*','set','site','UA-001')
+        _wa('newWaTracker','custom1',{customP1:'p1',customP2:'p2'},'../../_wa.gif',true, function (util) {
+            this.send = function (customP1,customP2) {
+                this._send({customP1:customP1,customP2:customP2});
+            }
+            //自定义tracker 可以通过处理_jsLoad事件，来进行默认的初始化处理
+            this.on('_jsLoad', function () {
+                this._send({customP1:'script',customP2:'just load!'})
+            });
+        });
+        _wa('*','set','site','UA-001');
+//        _wa('event','set','disableAuto',true) //注释这句，就可以看到点击div的时候，会自动触发事件收集
     </script>
 </head>
 <body>
 
-<div id="container"  style="background-color: yellow;padding: 20px;" _wa="auto">
+<div id="container"  style="background-color: yellow;padding: 20px;">
     this is a  div
-    <button  _wa="auto" onclick="javascript:_wa('event','send','we','are','your','custom params')">click me to see even track both in built-in event tracker and _wa=auto tracker </button>
+    <button   onclick="javascript:_wa('event','send','we','are','your','custom params')">click me to see even track both in built-in event tracker and _wa=auto tracker </button>
     <div  _wa="['custom1','send','this is custom p1','this is custom p2']" id="inner1" style="background-color: #0086b3; margin-top: 100px; height: 300px;padding: 20px;">
         this is a inner1 div,click me and see track events use custom tracker
-        <div  _wa="auto" id="inner2" style="background-color: #219161; margin-top: 100px; height: 400px;">
+        <div   id="inner2" style="background-color: #219161; margin-top: 100px; height: 400px;">
             this is a inner2 div,click me and see track events use _wa=auto
             <div  _wa="['event','send','category1','action1','tag1','value1']" id="inner3" style="background-color: #219161; margin-top: 100px; height: 400px;">
                 this is a inner3 div,click me and see track events use _wa DOM properties

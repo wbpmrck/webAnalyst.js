@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <title></title>
     <script>
-        !function(e,n,t,a,s,u,c,m){e[a]?e[a].queueName=u:e[a]={queueName:u},e[u]=e[u]||function(){(e[u].q=e[u].q||[]).push(arguments)},e[a].l=1*new Date,c=n.createElement(t),m=n.getElementsByTagName(t)[0],c.async=1,c.src=s,m.parentNode.insertBefore(c,m)}(window,document,"script","_webAnalyst","../../wa.js?sid1234","_wa");
+        @@include('../../bin/boot.js')
         //
-        _wa('*','set','site','UA-001')
         _wa('newWaTracker','custom1',{customP1:'p1',customP2:'p2'},'../../_wa.gif',true, function (util) {
             this.send = function (customP1,customP2) {
                 this._send({customP1:customP1,customP2:customP2});
@@ -15,7 +14,8 @@
             this.on('_jsLoad', function () {
                 this._send({customP1:'script',customP2:'just load!'})
             });
-        })
+        });
+        _wa('*','set','site','UA-001');
 //        _wa('event','set','disableAuto',true) //注释这句，就可以看到点击div的时候，会自动触发事件收集
     </script>
 </head>

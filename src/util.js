@@ -62,6 +62,16 @@
         }
         catch (ex) {}
     };
+    my.copyObj = function (obj) {
+        var r;
+        if(obj){
+            r ={};
+            for(var i in obj){
+                r[i] = obj[i];
+            }
+        }
+        return r;
+    }
     /**
      * 合并两个对象(b will overwrite a)
      *
@@ -167,9 +177,9 @@
         javaEnabled:+n.javaEnabled(),
         language : n.language || n.browserLanguage || n.systemLanguage || n.userLanguage || "",
         //是否ie浏览器
-        ie : +(wnd.attachEvent && !wnd.opera),
+        ie :+!!(wnd.attachEvent && !wnd.opera) ,
         //是否opera
-        opera : +(wnd.opera)
+        opera : +!!(wnd.opera)
     };
 
     function EventEmitter(){};
