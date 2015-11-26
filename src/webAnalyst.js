@@ -54,11 +54,11 @@
         //先看是否内置命令
         var cmd = _commands[trackerName];
         if(cmd){
-            cmd.apply(wa,argsCmd);
-            return;
+            return cmd.apply(wa,argsCmd);
         }
 
-        var trackers = entry.getTracker(trackerName);
+        var trackers = entry.getTracker(trackerName),
+            _ret=[];
 
         if(trackers){
             //trackers可能有多个，统一转化为数组来处理
@@ -71,13 +71,14 @@
                 //if (tracker[method]&&  tracker.constructor.prototype[method] == undefined && typeof tracker[method] ==='function') {
                 if (tracker[method]&& typeof tracker[method] ==='function') {
                     var methodFunc = tracker[method];
-                    methodFunc.apply(tracker, args);
+                    _ret.push(methodFunc.apply(tracker, args));
                 }
                 else {
                     // 暂时还无法处理的方法
                     tracker.pendingList.push(args);
                 }
             }
+            return _ret.length>1?_ret:_ret[0]
         }
     }
 

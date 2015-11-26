@@ -30,7 +30,7 @@ gulp.task('main', function () {
             propertiesPath: "conf/config.properties",
             delimiters: ["${*}"] // optional, defaults shown
         }))
-       .pipe(uglify())
+       //.pipe(uglify())
         //.pipe(gulp.dest("demo"))
         .pipe(gulp.dest("bin"));
 });

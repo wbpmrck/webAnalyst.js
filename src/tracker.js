@@ -40,6 +40,8 @@
 
         //保存用户使用_wa(trackerName,'set',xxx,xxx)后设置的自定义属性
         self.props={
+            id:'',//可选参数，如果不为空，则tracker在发送sid之前，会加上这个前缀
+            aid:undefined,//当前用户正在进行的动作编号，可选参数，如果不为空，则tracker在发送数据前，会加上这个
             //site是用户在监控平台上，创建要监控的网站后，得到的一个网站编码，后台通过网站编码可以知道是哪个用户的哪个网站
             site : ''//默认tracker不知道site是什么，需要用户使用_wa('*','set','site',XXXX)去初始化
         };
@@ -112,13 +114,16 @@
         data = self._retrieveData(data);
 
 
-        //追加时间戳,hitType,sid
+        //追加时间戳,hitType,sid,url,动作编号等
         data = util.merge(data,{
+            '_a': self.props.aid,
+            '_u': location.href,
             '_s': self.props.site,
             //'_t': timestamp().toString(36),
-            '_t': (+new Date()).toString(36),
+            //'_t': (+new Date()).toString(36),
+            '_t': +new Date(),
             '_n': self.name,
-            '_i': sid
+            '_i': self.props.id?self.props.id+'_'+sid:sid
         });
 
 
