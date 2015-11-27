@@ -586,6 +586,30 @@
                 id= dom.getAttribute("id")||'';
             return id?[tName,id].join("-"):tName
         },
+        _getTagInfo = function (dom) {
+            if(!dom){
+                return ""
+            }
+            return dom.getAttribute("_waTags")||'';
+        },
+        _getValueInfo = function (dom) {
+            if(!dom){
+                return 1
+            }
+            return parseInt(dom.getAttribute("_waValue"))||1;
+        },
+        _getActionInfo = function (dom) {
+            if(!dom){
+                return 1
+            }
+            return dom.getAttribute("_waAction");
+        },
+        _getCategoryInfo = function (dom) {
+            if(!dom){
+                return 1
+            }
+            return dom.getAttribute("_waCategory");
+        },
         /**
          * 根据事件信息，获取用户触发动作的手指/鼠标位置
          * @param evt
@@ -620,10 +644,10 @@
                 //如果disableAuto标记没有设置，则自动上传
                 else if(!trackerObj.get("disableAuto")){
                     var d= util.merge(_getTouchPos(e),{
-                        category:_builtInCategory,//_auto
-                        action:name, //'click','keydown','mousedown','touchstart'
-                        tag:'',
-                        value:1,
+                        category:_getCategoryInfo(t)||_builtInCategory,//_auto
+                        action:_getActionInfo(t)||name, //'click','keydown','mousedown','touchstart'
+                        tag:_getTagInfo(t),
+                        value:_getValueInfo(t),
                         dom:_getDOMInfo(t)
                     });
                     //alert(name+":"+JSON.stringify(d));
