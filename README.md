@@ -50,7 +50,7 @@ below is the webAnalyst architecture:
     * (**DONE**)优化API设计
         * 参考最新google analyze的风格设计，使用_wa()函数将对数据的操作包装起来：
             * _wa(trackerName,command,param1,param2,param3)
-    * (**ING**)完成API风格的设计确定
+    * (**DONE**)完成API风格的设计确定
         * 设定account:_wa.push(['_setAccount','0123456789ABCDEF0123456789ABCDEF'])
         * 开始时间埋点：_wa.push(['_docBegin',performance?performance.now():new Date() ])
             * 建议在head一开始加入这段脚本，记录文档开始执行的时间起点，以便于在不支持performanceAPI的浏览器上，获得相对准确的性能数据
@@ -71,11 +71,12 @@ below is the webAnalyst architecture:
         * 一个tracker有自己的名字，可以执行各种指令
         * 指令可以通过tracker对象调用，也可以通过全局任务队列_wa.push()调用
         * 支持对command处理结果进行订阅
-    * (**ING**)built-in tracker封装：
-        * (**ING**)page tracker:用于追踪页面PV,UV,**用户访问路径情况**浏览器信息，用户ip...等
+    * (**DONE**)built-in tracker封装：
+        * (**DONE**)page tracker:用于追踪页面PV,UV,**用户访问路径情况**浏览器信息，用户ip...等
             * 对于用户访问路径，考虑定义一些规范的html attr,然后通过body拦截消息来实现自动记录
         * (**DONE**)event tracker:用于提供自定义事件追踪功能
-        * performance tracker:用于对页面性能进行分析
+            * (**ING**)让eventTracker不仅可以全局设置disableAuto,也可以在DOM上贴标签来禁用部分区域的auto收集
+        * (**DONE**)performance tracker:用于对页面性能进行分析
             * 这部分tracker主要用于用户对自定义资源性能、自定义规则的页面性能进行追踪
             * 通过将tracker调用放在不同的位置(脚本解析时记录时间),以及指定不同的资源加载开始、结束时间，来实现定制规则的性能分析
             * Resource Timing API,Navigation Timing API的封装
@@ -86,18 +87,18 @@ below is the webAnalyst architecture:
         * ErrorTracker
             * 负责对页面中存在的js错误、资源加载错误等错误情况进行收集和传递
         
-    * 允许社区自定义:
-        * (**ING**)自定义tracker:
+    * (**DONE**)允许社区自定义:
+        * (**DONE**)自定义tracker:
             * 目的：用户可以使用_wa('new','<trackerName>',factoryFunc)
                 * 内部:调用factoryFunc创建tracker,并且注册到全局tracker中心
-    * 优化wa.js:
+    * (**DONE**)优化wa.js:
         * 提供配置功能，可以灵活配置启用哪些tracker,禁用哪些tracker
     * 考虑提供一些接口，能够灵活对接第三方的跟踪器
         * 在一些跟踪动作发生的时候，多个第三方跟踪器都能收到跟踪
 
 * (**DONE**)完成构建环境的搭建
 
-* 开发demo数据收集服务端
+* (**DONE**)开发demo数据收集服务端
     * 利用cookie标识唯一用户
     * 解决数据上传脚本缓存和上传地址更新的矛盾问题
     

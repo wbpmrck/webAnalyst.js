@@ -56,41 +56,71 @@
 
     var
         /**
-         * 通过DOM对象，获取DOM对象描述信息(type-id):如：div-login
+         * 递归的向上查找某个属性，并使用指定字符进行拼接
          * @param dom
+         * @param pName
+         * @param splitter
+         * @param defaultValue
          * @private
          */
-        _getDOMInfo = function (dom) {
-            if(!dom){
-                return ""
+        _recursiveGetAttr = function(dom,pName,splitter,defaultValue){
+            var l=defaultValue,
+                pl;
+            if(dom) {
+                if (dom.getAttribute) {
+                    l = dom.getAttribute(pName);
+                    //获取父元素的attr信息
+                    pl = _recursiveGetAttr(dom.parentNode,pName,splitter,defaultValue);
+
+                    if(l){
+                        if(pl!==undefined && pl !== null && pl!==""){
+                            l= pl+splitter+l;
+                        }
+                    }else{
+                        l=pl;
+                    }
+
+                }
             }
-            var tName = dom.tagName,
-                id= dom.getAttribute("id")||'';
-            return id?[tName,id].join("-"):tName
+            return l;
         },
+
         _getTagInfo = function (dom) {
-            if(!dom){
-                return ""
-            }
-            return dom.getAttribute("_waTags")||'';
+            return _recursiveGetAttr(dom,"wa-tags",">","");
+            //return dom.getAttribute("_waTags")||'';
         },
         _getValueInfo = function (dom) {
-            if(!dom){
-                return 1
-            }
-            return parseInt(dom.getAttribute("_waValue"))||1;
+            return _recursiveGetAttr(dom,"wa-value",">",undefined);
+            //if(!dom){
+            //    return 1
+            //}
+            //return parseInt(dom.getAttribute("_waValue"))||1;
         },
         _getActionInfo = function (dom) {
-            if(!dom){
-                return 1
-            }
-            return dom.getAttribute("_waAction");
+            return _recursiveGetAttr(dom,"wa-action",">",undefined);
+            //if(!dom){
+            //    return null;
+            //}
+            //return dom.getAttribute("_waAction");
         },
         _getCategoryInfo = function (dom) {
-            if(!dom){
-                return 1
+            return _recursiveGetAttr(dom,"wa-category",">","");
+            //if(!dom){
+            //    return null;
+            //}
+            //return dom.getAttribute("_waCategory");
+        },
+        _checkDisableAuto = function (dom) {
+            var settings = _recursiveGetAttr(dom,"wa-disable-auto",">","").split(">");
+            //根据dom以及父节点的配置，来判断这次事件是否要记录日志
+            for(var i=0,j=settings.length;i<j;i++){
+                var conf = settings[i];
+                //如果父节点中配置过，则使用父节点配置的信息
+                if(conf.length>0){
+                    return conf;
+                }
             }
-            return dom.getAttribute("_waCategory");
+            return "false";//默认是不禁用自动事件抛送的
         },
         /**
          * 根据事件信息，获取用户触发动作的手指/鼠标位置
@@ -124,14 +154,16 @@
                 }
                 //如果没有,则使用默认方式收集数据
                 //如果disableAuto标记没有设置，则自动上传
-                else if(!trackerObj.get("disableAuto")){
+                else if(!trackerObj.get("disableAuto") && (_checkDisableAuto(t)!=="true" )){
                     var d= util.merge(_getTouchPos(e),{
                         category:_getCategoryInfo(t)||_builtInCategory,//_auto
-                        action:_getActionInfo(t)||name, //'click','keydown','mousedown','touchstart'
+                        action:_getActionInfo(t),
                         tag:_getTagInfo(t),
                         value:_getValueInfo(t),
-                        dom:_getDOMInfo(t)
+                        //dom:_getDOMInfo(t)
+                        dom:util.locateDOM(t)
                     });
+                    d.action= (d.action?(d.action+'|'):'')+name;
                     //alert(name+":"+JSON.stringify(d));
                     //生成跟踪数据，发送到后台
                     trackerObj.send(d)

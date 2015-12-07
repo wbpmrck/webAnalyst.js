@@ -119,6 +119,51 @@
             return +newDate()
         }
     }
+    /**
+     * 通过传入的DOM元素得到该元素在页面上的唯一定位信息：
+     * 1、如果有id,则返回id
+     * 2、如果没有id,则向上查找parent:
+     *  如果该parent有若干个兄弟，则标注该parent是第几个兄弟
+     *  一直向上查找到有id的parent，或者到达body为止
+     * @param dom
+     */
+    my.locateDOM = function (dom) {
+        var l="",
+            pl;
+        if(dom){
+            if(dom.getAttribute){
+                l =dom.getAttribute("id");
+                //如果dom没有定义id，则尝试从父元素来定位它自己
+                if(l===null){
+                    //先获取父元素的定位信息
+                    pl = my.locateDOM(dom.parentNode);
+                    //再获取自己在父元素的同类子元素中，是第几个
+                    var sibling = dom.previousSibling,
+                        count=0;
+                    //遍历所有在前面的“元素”类兄弟
+                    while (true) {
+                        if(sibling){
+                            if(sibling.nodeType===1 && sibling.tagName.toLowerCase() === dom.tagName.toLowerCase()){
+                                //如果是元素类节点，且元素名和dom一样
+                                count++;
+                            }
+                            sibling = sibling.previousSibling;
+                        }else{
+                            //没有前面的兄弟了，查找结束
+                            break;
+                        }
+                    }
+                    l=[pl,'>',dom.tagName.toLowerCase(),'[',count,']'].join('')
+                }else{
+                    //如果有id,则用#表示id
+                    l="#"+l;
+                }
+            }else{
+                l = dom.nodeName
+            }
+        }
+        return l;
+    }
 
     /**
      * 注意，这个domReady是为了检测DOMContentLoad时间而设计，为尽量精确，所以没有使用计时器触发回调.和jquery等库的方式不同
