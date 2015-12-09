@@ -75,7 +75,19 @@ below is the webAnalyst architecture:
         * (**DONE**)page tracker:用于追踪页面PV,UV,**用户访问路径情况**浏览器信息，用户ip...等
             * 对于用户访问路径，考虑定义一些规范的html attr,然后通过body拦截消息来实现自动记录
         * (**DONE**)event tracker:用于提供自定义事件追踪功能
-            * (**ING**)让eventTracker不仅可以全局设置disableAuto,也可以在DOM上贴标签来禁用部分区域的auto收集
+            * 可自定义的事件标签包括:
+                * wa-category="":事件分类
+                * wa-tags="":事件标签
+                * wa-value="":事件权值
+                * wa-action="":事件动作
+            * (**DONE**)让eventTracker不仅可以全局设置disableAuto,也可以在DOM上贴标签来禁用部分区域的auto收集
+                * 使用方法:wa-disable-auto="true" 即可让该dom节点不进行自动事件收集
+            * (**DONE**)让eventTracker,可以在DOM上贴标签来禁用部分属性的继承
+                * 使用方法:
+                    * wa-inherit-disable="all":所有其他wa-action、wa-tag等属性都不从父元素继承了
+                    * wa-inherit-disable="wa-xxx":指定的wa-xxx属性不从父元素继承,其他属性仍然继承
+                    
+                
         * (**DONE**)performance tracker:用于对页面性能进行分析
             * 这部分tracker主要用于用户对自定义资源性能、自定义规则的页面性能进行追踪
             * 通过将tracker调用放在不同的位置(脚本解析时记录时间),以及指定不同的资源加载开始、结束时间，来实现定制规则的性能分析

@@ -69,8 +69,22 @@
             if(dom) {
                 if (dom.getAttribute) {
                     l = dom.getAttribute(pName);
-                    //获取父元素的attr信息
-                    pl = _recursiveGetAttr(dom.parentNode,pName,splitter,defaultValue);
+                    //如果本元素没有禁用向上递归
+                    //wa-inherit-disable="all":全部禁止
+                    var disable = dom.getAttribute("wa-inherit-disable")||"",
+                        iht = disable.split(",");
+
+                    //wa-inherit-disable="a,b,c" ... 禁止对指定这些属性的查找
+                    for(var i in iht){
+                        if(iht[i]===pName){
+                            disable=1;
+                            break;
+                        }
+                    }
+                    if(disable!=="all" && disable!==1){
+                        //获取父元素的attr信息
+                        pl = _recursiveGetAttr(dom.parentNode,pName,splitter,defaultValue);
+                    }
 
                     if(l){
                         if(pl!==undefined && pl !== null && pl!==""){
@@ -82,7 +96,7 @@
 
                 }
             }
-            return l;
+            return l===null||l===undefined?defaultValue:l;
         },
 
         _getTagInfo = function (dom) {
@@ -154,7 +168,7 @@
                 }
                 //如果没有,则使用默认方式收集数据
                 //如果disableAuto标记没有设置，则自动上传
-                else if(!trackerObj.get("disableAuto") && (_checkDisableAuto(t)!=="true" )){
+                if(!trackerObj.get("disableAuto") && (_checkDisableAuto(t)!=="true" )){
                     var d= util.merge(_getTouchPos(e),{
                         category:_getCategoryInfo(t)||_builtInCategory,//_auto
                         action:_getActionInfo(t),
