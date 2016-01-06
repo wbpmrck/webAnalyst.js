@@ -116,7 +116,7 @@
         if(wnd.performance){
             return performance.now()
         }else{
-            return +newDate()
+            return +(new Date())
         }
     }
     /**
