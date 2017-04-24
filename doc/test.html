@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>演示wa.js的日志记录功能</title>
+
+
+    <style>
+        .tracker .trackerTitle{
+            font-family: "Apple Braille";
+            font-size: large;
+            color: crimson;
+            line-height: 30px;
+        }
+
+        .notice{
+            color: red;
+            font-weight: bold;
+        }
+
+        .remark{
+            color:green;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<h2>wa.js的引入方式</h2>
+<ul>
+    <li>wa.js以文件形式,部署在静态文件服务器,使用wa的页面,直接在页面上使用</li>
+    <li>wa.js通过logProxy动态吐出,logProxy在吐出js的同时,会给浏览器种植一个指向当前访问域名的cookie值,这样网站后台也可以拿到logProxy统一分配的用户跨站身份唯一标识</li>
+</ul>
+<hr/>
+<h2>wa内置日志tracker</h2>
+<ul>
+    <li>wa.js是一个日志跟踪框架+3个内置的tacker,每个tracker负责收集\发送不同的数据:
+    <ul>
+        <li class="tracker"><span class="trackerTitle">内置通用字段定义(以下字段每一个跟踪器的每个日志请求都会带):</span>
+            <ul>
+                <li>actionId(_a)
+                    <ul>
+                        <li>操作序号</li>
+                        <li>例:"1","101"</li>
+                        <li class="remark">这个字段是业务系统自己控制修改的,当用户的一次操作结束,业务系统自己去修改这个id</li>
+                    </ul>
+                </li>
+                <li>url(_u)
+                    <ul>
+                        <li>当前页面url</li>
+                        <li>例:"http://www.adsring/userCenter/101"</li>
+                        <li class="remark">这个字段取值为location.href</li>
+                    </ul>
+                </li>
+                <li>siteId(_s)
+                    <ul>
+                        <li>当前网站标识</li>
+                        <li>例:"UA-001","site-02"</li>
+                        <li class="remark">业务系统使用wa的时候,对自己的网站体系要做一些管理,每个分配一个标识.主要用于区分不同站点的日志</li>
+                    </ul>
+                </li>
+                <li>time(_t)
+                    <ul>
+                        <li>日志记录的事件(UNIX时间戳)</li>
+                        <li>例:"1465290100741"</li>
+                    </ul>
+                </li>
+                <li>trackerName(_n)
+                    <ul>
+                        <li>跟踪器(tracker)的名字,表示这个日志是哪个跟踪器发出的</li>
+                        <li>例:"pageView","perf","event","xxxx(自定义)"</li>
+                        <li class="remark">内置跟踪器的名字是固定的,用户也可以自定义自己的跟踪器</li>
+                    </ul>
+                </li>
+                <li>identify(_i)
+                    <ul>
+                        <li>会话标识:格式<1级会话id>_<2级会话id>(第一级是服务器session,第二级是页面session,页面session在页面刷新时重新生成)</li>
+                        <li>例:"testSession_ip584c5ih0de"</li>
+                        <li class="remark">业务可以根据自己的需要,对这个字段进行截取或者保留2级的结构</li>
+                        <li class="remark">1级会话id是通过调用_wa方法设置的,2级id是wa自己生成的</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+
+        <hr/>
+
+        <li class="tracker"><span class="trackerTitle">eventTracker</span>
+            <ul>
+                <li>主要负责记录事件日志,包括但不限于:
+                    <ul>
+                        <li>用户在页面上的点\按事件</li>
+                        <li>用户触发一个业务操作</li>
+                        <li>用户打开\关闭一些弹窗</li>
+                        <li>...(任何业务上需要自定义的日志)</li>
+                    </ul>
+                </li>
+                <li class="remark">为了方便用户自定义业务日志字段取值,支持直接在html上标注属性来定义日志字段值</li>
+                <li class="notice">为了减少重复设置html的属性,wa会递归向上查找元素的父亲,使用最近的wa-xxx属性作为日志对应字段的值(适合场景举例:某一块区域的操作,action都是一样的,这时候只需要在最外层容器上设置wa-action)</li>
+                <li>日志字段定义(括号内为实际发送的header头的key):
+                    <ul>
+                        <li>category(c)
+                            <ul>
+                                <li>表示日志分类</li>
+                                <li>例:"userOp","RPC"</li>
+                                <li class="remark">可以通过在html元素(或其父亲元素)上添加属性来实现自动取值,attr格式: wa-category="xxx"</li>
+                            </ul>
+                        </li>
+                        <li>action(a)
+                            <ul>
+                                <li>表示操作(行为)编码</li>
+                                <li>例:"login","listenMp3"</li>
+                                <li class="remark">可以通过在html元素(或其父亲元素)上添加属性来实现自动取值,attr格式: wa-action="xxx"</li>
+                            </ul>
+                        </li>
+                        <li>tag(t)
+                            <ul>
+                                <li>表示日志标签</li>
+                                <li class="remark">这里可以填写任何格式的标签,wa只是帮助发送出去,具体怎么解析,可以靠业务自己的log接受组件去拆分,比如这种用|分割的多个标签:"loginForm|login|..."</li>
+                                <li class="remark">可以通过在html元素(或其父亲元素)上添加属性来实现自动取值,attr格式: wa-tags="xxx"</li>
+                            </ul>
+                        </li>
+                        <li>value(v)
+                            <ul>
+                                <li>表示日志权值</li>
+                                <li>例:100,40</li>
+                                <li class="remark">使用场景多为一些需要对事件做优先级划分的场景,比如我记录一个瀑布流加载的日志,可以用"当前页数"来作为value,具体根据实际需要</li>
+                                <li class="remark">可以通过在html元素(或其父亲元素)上添加属性来实现自动取值,attr格式: wa-value="xxx"</li>
+                            </ul>
+                        </li>
+                        <li>x,y(x,y)
+                            <ul>
+                                <li>表示用户操作所在的屏幕坐标</li>
+                                <li>例:(200,400)表示横坐标200,纵坐标400</li>
+                                <li class="remark">对于用户的click(移动设备为touchStart)行为,wa默认会自动获取坐标(当然你可以通过调用_wa方法自己传递)</li>
+                            </ul>
+                        </li>
+                        <li>dom(d)
+                            <ul>
+                                <li>表示用户操作的DOM元素的唯一标识</li>
+                                <li class="remark">wa会想办法定位这个元素,具体规则如下:
+                                    <ul>
+                                        <li>如果该元素有id,则直接用#xxx标识</li>
+                                        <li>如果该元素没有id,则wa会向上查找父亲,直到找到一个有id的父亲,或者找到body元素为止,并使用一种简单的格式描述这个元素,举例如下:
+                                            <ul>
+                                                <li>#playerC>div[1]>ul[0]>li[1]>h2[0]</li>
+                                                <li>表示id为"playerC"的元素=>的第二个div子元素=>的第一个ul子元素=>的第二个li子元素=>的第一个h2</li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+
+        <hr/>
+        <li class="tracker"><span class="trackerTitle">pageViewTracker</span>
+            <ul>
+                <li>主要负责记录页面访问日志,该日志主要可以用于分析:
+                    <ul>
+                        <li>PV,UV</li>
+                        <li>浏览器版本,操作系统信息</li>
+                        <li>用户浏览器对cookie,js等支持成都</li>
+                        <li>...</li>
+                    </ul>
+                </li>
+                <li class="notice">该tracker记录了很多有用的信息,这些信息即使暂时不用,也应该放入后台库中,以备不时之需</li>
+                <li>日志字段定义(括号内为实际发送的header头的key):
+                    <ul>
+                        <li>browser(a)
+                            <ul>
+                                <li>浏览器类型   1 IE  2 opera 3 firefox  4 safari  5 chrome</li>
+                                <li>例:"5"</li>
+                                <li class="remark">这个浏览器类型,是前端根据一定条件判断的,随着时间变化.可能会不准,所以后台可以参考,最好后台根据其他参数自己分析浏览器类型</li>
+                            </ul>
+                        </li>
+                        <li>bVerMain(r)
+                            <ul>
+                                <li>浏览器主版本号</li>
+                                <li>例:"49"</li>
+                            </ul>
+                        </li>
+                        <li>bVer(b)
+                            <ul>
+                                <li>浏览器版本</li>
+                                <li>例:"49.0.2623.112"</li>
+                            </ul>
+                        </li>
+                        <li>flashVersion(q)
+                            <ul>
+                                <li>flash版本号</li>
+                                <li>例:"9.0"</li>
+                                <li class="remark">如果浏览器未开启flash功能,则获取不到</li>
+                            </ul>
+                        </li>
+                        <li>osVersion(p)
+                            <ul>
+                                <li>操作系统版本号</li>
+                                <li>例:"10_11_3"</li>
+                            </ul>
+                        </li>
+                        <li>os(o)
+                            <ul>
+                                <li>操作系统</li>
+                                <li>例:"Mac OS X"</li>
+                            </ul>
+                        </li>
+                        <li>appver(n)
+                            <ul>
+                                <li>取值:navigator.appversion</li>
+                                <li>例:"5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36"</li>
+                                <li class="remark">主要用于后续分析浏览器类型使用</li>
+                            </ul>
+                        </li>
+                        <li>mobile(m)
+                            <ul>
+                                <li>1是 0不是</li>
+                                <li>例:0</li>
+                                <li class="remark">在前端对是否移动设备进行简单的判断</li>
+                            </ul>
+                        </li>
+                        <li>pf(l)
+                            <ul>
+                                <li>navigator.platform</li>
+                                <li>例:MacIntel</li>
+                            </ul>
+                        </li>
+                        <li>vd(k)
+                            <ul>
+                                <li>navigator.vender</li>
+                                <li>例:Google Inc</li>
+                            </ul>
+                        </li>
+                        <li>ft(i)
+                            <ul>
+                                <li>浏览器对一些特性的支持.每一位代表一个新特性,0代表不支持.1代表支持.当前位定义:geolocation|websocket|webworker|JSON|HTML5|performanceAPI</li>
+                                <li>例:111111 (代表特性全部支持)</li>
+                            </ul>
+                        </li>
+                        <li>cd(h)
+                            <ul>
+                                <li>颜色深度:colorDepth</li>
+                                <li>例:24 (代表24位色值)</li>
+                            </ul>
+                        </li>
+                        <li>dx(g)
+                            <ul>
+                                <li>device resolution x:设备分辨率:横向</li>
+                                <li>例:1440</li>
+                            </ul>
+                        </li>
+                        <li>dy(f)
+                            <ul>
+                                <li>device resolution x:设备分辨率:纵向</li>
+                                <li>例:900</li>
+                            </ul>
+                        </li>
+                        <li>cookieEnabled(e)
+                            <ul>
+                                <li>是否支持cookie</li>
+                                <li>例:1</li>
+                            </ul>
+                        </li>
+                        <li>javaEnabled(d)
+                            <ul>
+                                <li>是否支持java</li>
+                                <li>例:0</li>
+                            </ul>
+                        </li>
+                        <li>language(c)
+                            <ul>
+                                <li>语言设置</li>
+                                <li>例:"zh-CN"</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+
+        <hr/>
+        <li class="tracker"><span class="trackerTitle">performanceTracker</span>
+            <ul>
+                <li>主要负责记录页面加载的性能相关日志,该日志主要可以用于分析:
+                    <ul>
+                        <li>页面加载不同阶段速度</li>
+                        <li>首屏时间\完全加载完成时间</li>
+                        <li>用户的网络情况</li>
+                        <li>...</li>
+                    </ul>
+                </li>
+                <li class="notice">性能日志承担一个很重要的角色,就是对性能优化的结果进行现网验证,通过后期的数据统计和图表展示,可以对性能优化的效果进行评估</li>
+                <li>日志字段定义(括号内为实际发送的header头的key):
+                    <ul>
+                        <li>start(s)
+                            <ul>
+                                <li>页面开始下载的UNIX时间戳(如果有timing API,则使用naviationStart,否则使用wa脚本收集到的入口时间)</li>
+                                <li>例:"1465649882254"</li>
+                                <li class="notice">注意,以下所有的时间,为了减少日志量,都是采用相对于这个时间的"相对时间"记录的.</li>
+                            </ul>
+                        </li>
+                        <li>contentLoad(cl)
+                            <ul>
+                                <li>DOM加载完的相对时刻</li>
+                                <li>例:"319"</li>
+                            </ul>
+                        </li>
+                        <li>load(ld)
+                            <ul>
+                                <li>全部同步资源加载完的相对时刻</li>
+                                <li>例:"629"</li>
+                            </ul>
+                        </li>
+                        <li>paint(pt)
+                            <ul>
+                                <li>页面开始渲染的相对时刻</li>
+                                <li>例:"205"</li>
+                            </ul>
+                        </li>
+                        <li>active(at)
+                            <ul>
+                                <li>用户可以进行动作的相对时刻</li>
+                                <li>例:"319"</li>
+                            </ul>
+                        </li>
+                        <li>firstScreen(fs)
+                            <ul>
+                                <li>首屏渲染完(待实现)的相对时刻</li>
+                                <li>例:"329"</li>
+                                <li class="notice">由于如何定义"首屏",并没有一个统一的规则.所以tracker默认是不会发送这个字段的.如果使用者需要统计,则可以使用自己的自定义tracker</li>
+                            </ul>
+                        </li>
+                        <li>dnsTime(dns)
+                            <ul>
+                                <li>dns查找 花去的时间</li>
+                                <li>例:"4"</li>
+                            </ul>
+                        </li>
+                        <li>connTime(con)
+                            <ul>
+                                <li>建立连接 花去的时间</li>
+                                <li>例:"34"</li>
+                            </ul>
+                        </li>
+                        <li>firstBit(fb)
+                            <ul>
+                                <li>从发出请求，到准备接收第一个字节 花去的时间</li>
+                                <li>例:"55"</li>
+                            </ul>
+                        </li>
+                        <li>trans(tr)
+                            <ul>
+                                <li>从开始传输，到结束传输 花去的时间</li>
+                                <li>例:"3"</li>
+                            </ul>
+                        </li>
+                        <li>navigationStart(t0)
+                            <ul>
+                                <li>这个是完整时间</li>
+                                <li>例:"1465651453302"</li>
+                                <li class="remark">从这里开始,记录的全部是performanceAPI的原始值,从t1开始,都是使用的相对t0的数值</li>
+                            </ul>
+                        </li>
+                        <li>domainLookupStart(t1)
+                        </li>
+                        <li>domainLookupEnd(t2)
+                        </li>
+                        <li>connectStart(t3)
+                        </li>
+                        <li>connectEnd(t4)
+                        </li>
+                        <li>requestStart(t5)
+                        </li>
+                        <li>responseStart(t6)
+                        </li>
+                        <li>responseEnd(t7)
+                        </li>
+                        <li>domContentLoadedEventStart(t8)
+                        </li>
+                        <li>loadEventStart(t9)
+                        </li>
+                        <li>loadEventEnd(ta)
+                        </li>
+
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    </li>
+</ul>
+
+
+<hr/>
+<h2>简单使用样例</h2>
+<ul>
+    <li>查看wa自动默认记录的日志:
+        <ul>
+            <li class="remark">如果使用的是chrome/firefox等浏览器,F12打开开发者工具,刷新本页面,应该可以看到2个图片请求(失败的)</li>
+            <li class="remark">这2个请求分别是pageView和perf日志(通过header的_n字段看出)</li>
+        </ul>
+    </li>
+    <li>点击按钮,使用eventTracker记录一个自定义业务日志 :其中分类c1,action:a1,tag:t1,value:999
+
+        <button onclick="eventLog();">click me</button>
+    </li>
+</ul>
+
+<hr/>
+<h2>高级特性(文档待补充)</h2>
+<ul>
+    <li>自定义tracker
+    </li>
+    <li>自定义commonFileds
+    </li>
+    <li>
+        ...
+    </li>
+</ul>
+
+
+
+
+<script>
+
+    /*
+        下面几个变量,实际项目中使用的时候,根据自己的环境情况进行修改
+     */
+    var scriptUrl ="wa.js"; //wa.js获取路径(可以是静态文件服务的地址,也可以是logProxy服务地址,比如:http://log.static.adsRing.com:3130/_wa.js)
+
+    //wa.js会通过模拟图片请求来发送一次数据收集,所以这个url得返回一个图片response.同时可以给用户种植
+    //全局cookie.这样就可以分析出不同网站域名上的同一个用户的行为轨迹.
+    //参考logProxy的response,输出的一个空图片(baidu,google也是类似方案)
+    var reportUrl = "http://adsring.com/collect.gif";
+
+    var sessionId = "testSession"; //这个是标识用户的一次会话,通常有web后台生成,把sessionId写入到这里
+    var siteId ='UA-001'; //唯一标识一个站点
+    var actionId ='1'; //代表用户在界面的1次操作(这个是业务自己决定\生成\变更的)
+
+
+
+    //---------------------------------------------------------
+
+    //使用下面的脚本引入wa.js
+    !function(e,n,t,a,s,u,c,m){e[a]?e[a].queueName=u:e[a]={queueName:u},e[u]=e[u]||function(){(e[u].q=e[u].q||[]).push(arguments)},e[a].l=1*new Date,c=n.createElement(t),m=n.getElementsByTagName(t)[0],c.async=1,c.src=s,m.parentNode.insertBefore(c,m)
+    }(window,document,"script","_webAnalyst",scriptUrl,"_wa");
+
+    _wa('*','setReportUrl',reportUrl); //告诉wa,汇报数据的地址
+    _wa('*','set','site',siteId); //告诉wa,本网站标识(后台数据可以区分网站分别进行统计)
+
+
+    // 跟踪器会自动在页面每次刷新的时候生成sid(这个可以理解为生命周期更短的session
+    // id+sid即可唯一标识一次会话
+    _wa('*','set','id', sessionId); //设置用户会话标识
+    _wa('*','set','aid',actionId); //告诉 webAnalyst里的所有跟踪器，当前动作编号更新了
+
+
+</script>
+
+<script>
+
+    function eventLog() {
+        _wa("event","send","c1","a1","t1",999)
+    }
+
+</script>
+</body>
+</html>
