@@ -36,6 +36,7 @@
             mobile: 'm', //是否移动设备
             pf:"l",  //navigator.platform
             vd:"k",  //navigator.vender
+            rf:"j",//document.referrer,
             //url:"j",
             ft:"i",   //feature支持
             cd:"h",
@@ -245,6 +246,7 @@
     //pageTracker 搜集到的信息
     var _collect=util.merge({
         vd:n.vendor,
+        rf:document.referrer,
         appver:n.appVersion,
         pf:n.platform,
         /**     features支持

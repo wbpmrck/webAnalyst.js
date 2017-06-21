@@ -1,0 +1,35 @@
+{
+  "name": "web-analyst",
+  "version": "1.0.0",
+  "description": "A powerful tool for collecting data from browser ,analyze page speed,track user action and so on.",
+  "main": "gulpfile.js",
+  "bin": {
+    "web-analyst": "boot.js"
+  },
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wbpmrck/webAnalyst.js.git"
+  },
+  "author": "kaicui",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wbpmrck/webAnalyst.js/issues"
+  },
+  "homepage": "https://github.com/wbpmrck/webAnalyst.js#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-file-include": "^1.1.0",
+    "gulp-filter-java-properties": "^0.1.1",
+    "gulp-header-footer": "0.0.3",
+    "gulp-order": "^1.1.1",
+    "gulp-print": "^2.0.1",
+    "gulp-uglify": "^3.0.0"
+  }
+}
